@@ -1,42 +1,91 @@
-<header class="header">
-  <div class="header__container">
-    
-    <!-- LOGO/MARCA -->
-    <div class="header__logo">
-      <a routerLink="/">
-        <h2>Vote4Tech</h2>
-      </a>
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__left">
+      <span>🇨🇴</span>
+      <span>República de Colombia</span>
+      <span class="topbar__sep">·</span>
+      <span>Registraduría Nacional del Estado Civil</span>
+      <span class="topbar__sep">·</span>
+      <span>Portal Oficial de Funcionarios</span>
     </div>
 
-    <!-- NAVEGACIÓN -->
-    <nav class="header__nav">
-      <ul class="header__menu">
-        <li *ngIf="isAuthenticated">
-          <a routerLink="/candidato" routerLinkActive="active">Candidatos</a>
-        </li>
-        <li *ngIf="isAuthenticated">
-          <a routerLink="/eleccion" routerLinkActive="active">Elecciones</a>
-        </li>
-        <li *ngIf="isAuthenticated">
-          <a routerLink="/jurado" routerLinkActive="active">Jurados</a>
-        </li>
-      </ul>
+    <div class="topbar__right">
+      <span class="topbar__link">01 8000 11 60 34</span>
+      <span class="topbar__link">Ayuda</span>
+      <span class="topbar__link">Accesibilidad</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="header">
+  <div class="header__inner">
+    <!-- LOGO -->
+    <a routerLink="/" class="logo">
+      <div class="logo__shield">
+        <svg fill="none" viewBox="0 0 24 24">
+          <path
+            d="M9 12l2 2 4-4m5.6-4A12 12 0 0112 3 12 12 0 013.4 6 12 12 0 003 9c0 5.5 3.8 10.2 9 11.6C17.2 19.2 21 14.5 21 9c0-1-.1-2-.4-3z"
+          />
+        </svg>
+      </div>
+
+      <div class="logo__text">
+        <span class="logo__name">Vote<em>4</em>Tech</span>
+        <span class="logo__sub">Sistema Electoral Nacional</span>
+      </div>
+    </a>
+
+    <!-- NAV -->
+    <nav class="nav" *ngIf="isAuthenticated">
+      <a routerLink="/eleccion" routerLinkActive="active" class="nav__link">Evento Electoral</a>
+      <a routerLink="/candidato" routerLinkActive="active" class="nav__link"
+        >Llaves y credenciales</a
+      >
+      <a routerLink="/jurado" routerLinkActive="active" class="nav__link">Multas</a>
+      <a class="nav__link">Infraestructura</a>
+      <a class="nav__link">Despliegue logístico</a>
+
+      <div class="nav__divider"></div>
+
+      <!-- BOTÓN SEARCH -->
+      <button class="nav__search-btn">🔍</button>
     </nav>
 
-    <!-- USUARIO Y LOGOUT -->
-    <div class="header__auth">
-      <div *ngIf="isAuthenticated" class="header__user-info">
-        <span class="header__user-type">{{ getTypeLabel() }}</span>
-        <span class="header__user-name">{{ userName }}</span>
-        <button class="header__logout-btn" (click)="onLogout()">
-          Cerrar Sesión
-        </button>
-      </div>
+    <!-- ACTIONS -->
+    <div class="header__actions">
+      <ng-container *ngIf="isAuthenticated; else loginBlock">
+        <!-- ROL -->
+        <span class="user-role">{{ getTypeLabel() }}</span>
 
-      <div *ngIf="!isAuthenticated" class="header__login">
-        <a routerLink="/login" class="header__login-link">Iniciar Sesión</a>
-      </div>
+        <!-- USUARIO -->
+        <span class="user-name">{{ userName }}</span>
+
+        <!-- LOGOUT -->
+        <button class="btn-access" (click)="onLogout()">Cerrar sesión</button>
+      </ng-container>
+
+      <!-- LOGIN -->
+      <ng-template #loginBlock>
+        <a routerLink="/login" class="btn-access"> Login </a>
+      </ng-template>
     </div>
-
   </div>
 </header>
+
+<!-- ═══════════════════ BREADCRUMB ═══════════════════ -->
+<div class="breadcrumb-bar">
+  <div class="container breadcrumb__inner">
+    <nav class="breadcrumb">
+      <a routerLink="/" class="breadcrumb__item">Inicio</a>
+      <span class="breadcrumb__sep">›</span>
+      <span class="breadcrumb__item breadcrumb__item--active"> Módulo Electoral </span>
+    </nav>
+
+    <div class="breadcrumb__meta">
+      <div class="breadcrumb__status-dot"></div>
+      <span>Sistema activo · Jornada Electoral 2026</span>
+    </div>
+  </div>
+</div>

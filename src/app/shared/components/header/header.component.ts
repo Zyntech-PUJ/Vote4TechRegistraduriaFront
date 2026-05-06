@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthStateService } from '../../services/auth-state.service';
@@ -9,7 +15,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
+  styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
@@ -17,12 +23,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   userName: string | null = null;
   userType: string | null = null;
   private subscription: Subscription | null = null;
-  private authChangeHandler: (() => void) | null = null; 
+  private authChangeHandler: (() => void) | null = null;
 
   constructor(
     private authService: AuthStateService,
     private router: Router,
-    private cdr: ChangeDetectorRef, 
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -51,7 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isAuthenticated = !!user;
     this.userName = user?.usuario || user?.username || null;
     this.userType = user?.tipo || null;
-    this.cdr.markForCheck(); 
+    this.cdr.markForCheck();
   }
 
   onLogout() {

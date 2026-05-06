@@ -1,21 +1,56 @@
+/* CONTENEDOR GLOBAL */
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ═════════ TOPBAR ═════════ */
+.topbar {
+  background: #0b2a4a;
+  color: #cbd5e1;
+  font-size: 0.75rem;
+
+  &__inner {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+  }
+
+  &__left,
+  &__right {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  &__sep {
+    opacity: 0.5;
+  }
+
+  &__link {
+    cursor: pointer;
+    opacity: 0.8;
+
+    &:hover {
+      color: #facc15;
+    }
+  }
+}
+
+/* ═════════ HEADER ═════════ */
 .header {
-  width: 100%;
   background: linear-gradient(90deg, #002d57, #0b3b6b);
   color: white;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-  &__container {
-    max-width: 1300px;   // 🔥 CLAVE (centra todo)
-    margin: 0 auto;
-    padding: 0.9rem 2rem;
-
+  &__inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0.8rem 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
   }
 }
 
@@ -24,33 +59,21 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  text-decoration: none;
   color: white;
-  animation: fadeIn 1s ease;
+  text-decoration: none;
 
   &__shield {
     width: 34px;
     height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
     svg {
       width: 100%;
       stroke: #facc15;
-      stroke-width: 2;
     }
-  }
-
-  &__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
   }
 
   &__name {
     font-weight: 700;
-    font-size: 1.05rem;
 
     em {
       color: #facc15;
@@ -59,7 +82,7 @@
   }
 
   &__sub {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     opacity: 0.7;
   }
 }
@@ -68,96 +91,95 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 1.8rem;
+  gap: 1.4rem;
 
   &__link {
-    font-size: 0.92rem;
-    color: white;
+    font-size: 0.85rem;
     opacity: 0.85;
     cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease;
 
     &:hover {
       color: #facc15;
-      opacity: 1;
-    }
-
-    &.active {
-      font-weight: 600;
-      color: #facc15;
-    }
-
-    /* animación underline */
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background: #facc15;
-      transition: width 0.25s ease;
-    }
-
-    &:hover::after {
-      width: 100%;
     }
   }
 
   &__divider {
     width: 1px;
     height: 18px;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &__search-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    color: white;
   }
 }
 
 /* ACTIONS */
-.actions {
+.header__actions {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
-/* BOTONES */
-.btn-icon {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: white;
-  padding: 0.4rem 0.7rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #facc15;
-    color: #facc15;
-  }
+.user-role {
+  font-size: 0.75rem;
+  opacity: 0.8;
 }
 
-/* BOTÓN PRINCIPAL */
-.btn-primary {
-  background: linear-gradient(135deg, #facc15, #eab308);
+.user-name {
+  font-weight: 500;
+}
+
+/* BOTON */
+.btn-access {
+  background: #facc15;
   color: black;
-  padding: 0.55rem 1.2rem;
-  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: all 0.25s ease;
-
-  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.35);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(250, 204, 21, 0.5);
-  }
+  border: none;
+  cursor: pointer;
 }
 
-/* RESPONSIVE */
-@media (max-width: 1100px) {
-  .nav {
-    display: none; // luego puedes hacer menú hamburguesa
-  }
+/* ═════════ BREADCRUMB ═════════ */
+.breadcrumb-bar {
+  background: #f1f5f9;
+  font-size: 0.8rem;
+}
+
+.breadcrumb__inner {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.breadcrumb__item {
+  color: #334155;
+}
+
+.breadcrumb__item--active {
+  font-weight: 600;
+}
+
+.breadcrumb__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.breadcrumb__status-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
 }
