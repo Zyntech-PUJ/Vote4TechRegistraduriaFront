@@ -1,0 +1,51 @@
+<div class="tarjeta-candidato" (click)="onVerDetalles()">
+  <!-- Header con estado -->
+  <div class="tarjeta-candidato__header" [style.background-color]="getColorEstado()">
+    <span class="tarjeta-candidato__estado">{{ getTextoEstado() }}</span>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="tarjeta-candidato__body">
+    <!-- Nombre del candidato -->
+    <h3 class="tarjeta-candidato__nombre">{{ candidato.nombre }}</h3>
+
+    <!-- Número de candidato -->
+    <p class="tarjeta-candidato__numero">
+      <strong>Número:</strong> {{ candidato.numero }}
+    </p>
+
+    <!-- Foto (PDF) -->
+    <div class="tarjeta-candidato__foto">
+      <ng-container *ngIf="fotoPdfUrl && !cargandoFoto && !errorFoto; else noFoto">
+        <embed
+          [src]="fotoPdfUrl"
+          type="application/pdf"
+          class="tarjeta-candidato__pdf"
+        />
+      </ng-container>
+
+      <ng-template #noFoto>
+        <div class="tarjeta-candidato__placeholder">
+          <ng-container *ngIf="cargandoFoto; else mostrarError">
+            <p>Cargando...</p>
+          </ng-container>
+
+          <ng-template #mostrarError>
+            <ng-container *ngIf="errorFoto; else noIntentado">
+              <p class="error">Error al cargar</p>
+            </ng-container>
+
+            <ng-template #noIntentado>
+              <p>Cargando foto...</p>
+            </ng-template>
+          </ng-template>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Footer con botón -->
+  <div class="tarjeta-candidato__footer">
+    <button class="btn btn--primary">Ver Detalles</button>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="tarjeta-partido" (click)="onVerDetalles()">
+  <!-- Header con estado -->
+  <div class="tarjeta-partido__header" [style.background-color]="getColorEstado()">
+    <span class="tarjeta-partido__estado">{{ getTextoEstado() }}</span>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="tarjeta-partido__body">
+    <!-- Nombre del partido -->
+    <h3 class="tarjeta-partido__nombre">{{ partido.nombre }}</h3>
+
+    <!-- Sigla del partido -->
+    <p class="tarjeta-partido__sigla">
+      <strong>Sigla:</strong> {{ partido.sigla }}
+    </p>
+
+    <!-- Logo (PDF) -->
+    <div class="tarjeta-partido__logo">
+      <ng-container *ngIf="logoPdfUrl && !cargandoLogo && !errorLogo; else noLogo">
+        <embed
+          [src]="logoPdfUrl"
+          type="application/pdf"
+          class="tarjeta-partido__pdf"
+        />
+      </ng-container>
+
+      <ng-template #noLogo>
+        <div class="tarjeta-partido__placeholder">
+          <ng-container *ngIf="cargandoLogo; else mostrarError">
+            <p>Cargando...</p>
+          </ng-container>
+
+          <ng-template #mostrarError>
+            <ng-container *ngIf="errorLogo; else noIntentado">
+              <p class="error">Error al cargar</p>
+            </ng-container>
+
+            <ng-template #noIntentado>
+              <p>Cargando logo...</p>
+            </ng-template>
+          </ng-template>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Footer con botón -->
+  <div class="tarjeta-partido__footer">
+    <button class="btn btn--primary">Ver Detalles</button>
+  </div>
+</div>

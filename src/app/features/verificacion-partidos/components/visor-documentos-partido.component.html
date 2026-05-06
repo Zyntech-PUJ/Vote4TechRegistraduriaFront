@@ -1,0 +1,50 @@
+<div class="visor-documentos">
+  <h3 class="visor-documentos__titulo">Documentos del Partido</h3>
+
+  <div class="visor-documentos__grid">
+    <div *ngFor="let documento of documentos" class="documento-card">
+      <!-- Icono y nombre -->
+      <div class="documento-card__header">
+        <span class="documento-card__icono">{{ documento.icono }}</span>
+        <h4 class="documento-card__label">{{ documento.label }}</h4>
+      </div>
+
+      <!-- Área de visualización o carga -->
+      <div class="documento-card__preview">
+        <!-- Si está cargado, mostrar PDF -->
+        <ng-container *ngIf="estaCargado(documento.tipo); else noCargado">
+          <div class="documento-card__preview-content">
+            <embed
+              [src]="documentoUrlSanitizada[documento.tipo]"
+              type="application/pdf"
+              class="documento-card__pdf"
+            />
+          </div>
+        </ng-container>
+
+        <!-- Si no está cargado o hay error -->
+        <ng-template #noCargado>
+          <div class="documento-card__placeholder">
+            <ng-container *ngIf="hayError(documento.tipo); else noIntentado">
+              <p class="documento-card__error">Error al cargar</p>
+            </ng-container>
+
+            <ng-template #noIntentado>
+              <p class="documento-card__sin-cargar">Cargando...</p>
+            </ng-template>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Botón descargar -->
+      <div class="documento-card__acciones">
+        <button
+          class="btn btn--ghost"
+          (click)="descargarDocumento(documento)"
+        >
+          Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
