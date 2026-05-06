@@ -1,0 +1,176 @@
+.detalle-partido {
+  width: 100%;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__back {
+    margin-bottom: 2rem;
+  }
+
+  &__header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__documentos {
+    margin-bottom: 2rem;
+  }
+
+  &__acciones {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Header Info */
+.header-info {
+  &__estado-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  &__nombre {
+    margin: 0 0 1rem 0;
+    font-size: 2rem;
+    color: #002d57;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #666;
+
+    strong {
+      color: #002d57;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Botones */
+.btn-volver {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #002d57;
+  }
+}
+
+.btn {
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  flex: 1;
+  min-width: 150px;
+
+  &--primary {
+    background: #facc15;
+    color: black;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+    }
+  }
+
+  &--success {
+    background: #10b981;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &--danger {
+    background: #ef4444;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Estados */
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+
+  p {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #666;
+  }
+}
+
+.error-state {
+  p {
+    color: #ef4444;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 768px) {
+  .detalle-partido {
+    padding: 1rem;
+
+    &__acciones {
+      flex-direction: column;
+    }
+  }
+
+  .header-info__nombre {
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    min-width: auto;
+  }
+}

@@ -1,0 +1,80 @@
+<section class="dashboard-partidos">
+  <!-- Botón volver -->
+  <div class="dashboard-partidos__back">
+    <button class="btn-volver" (click)="volverALanding()">← Volver a inicio</button>
+  </div>
+
+  <!-- Header -->
+  <header class="dashboard-partidos__header">
+    <div class="dashboard-partidos__info">
+      <h1 class="dashboard-partidos__title">Verificación de Partidos Políticos</h1>
+      <p class="dashboard-partidos__subtitle">
+        Revisa y verifica las solicitudes de partidos políticos registrados
+      </p>
+    </div>
+  </header>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="dashboard-partidos__filters">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Buscar por nombre o sigla..."
+        [(ngModel)]="busqueda"
+        class="search-box__input"
+      />
+    </div>
+
+    <div class="filter-buttons">
+      <button
+        *ngFor="let estado of estadosDisponibles"
+        (click)="cambiarFiltro(estado)"
+        [class.active]="filtroEstado === estado"
+        class="filter-buttons__btn"
+      >
+        {{ estado | titlecase }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <main class="dashboard-partidos__content">
+    <!-- Estado: Cargando -->
+    <ng-container *ngIf="loading; else noLoading">
+      <div class="loading-state">
+        <p>Cargando partidos...</p>
+      </div>
+    </ng-container>
+
+    <ng-template #noLoading>
+      <!-- Estado: Error -->
+      <ng-container *ngIf="error; else noError">
+        <div class="error-state">
+          <p>{{ errorMessage }}</p>
+          <button class="btn btn--primary" (click)="reintentar()">Reintentar</button>
+        </div>
+      </ng-container>
+
+      <ng-template #noError>
+        <!-- Estado: Sin resultados -->
+        <ng-container *ngIf="partidosFiltrados.length === 0; else tienePartidos">
+          <div class="empty-state">
+            <p>No hay partidos disponibles</p>
+          </div>
+        </ng-container>
+
+        <!-- Estado: Mostrando partidos -->
+        <ng-template #tienePartidos>
+          <div class="partidos-grid">
+            <app-tarjeta-partido
+              *ngFor="let partido of partidosFiltrados"
+              [partido]="partido"
+              [estado]="obtenerEstado(partido)"
+              (verDetalles)="verDetalles($event)"
+            ></app-tarjeta-partido>
+          </div>
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  </main>
+</section>

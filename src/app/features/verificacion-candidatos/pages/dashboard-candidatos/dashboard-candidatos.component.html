@@ -1,0 +1,80 @@
+<section class="dashboard-candidatos">
+  <!-- Botón volver -->
+  <div class="dashboard-candidatos__back">
+    <button class="btn-volver" (click)="volverALanding()">← Volver a inicio</button>
+  </div>
+
+  <!-- Header -->
+  <header class="dashboard-candidatos__header">
+    <div class="dashboard-candidatos__info">
+      <h1 class="dashboard-candidatos__title">Verificación de Candidatos</h1>
+      <p class="dashboard-candidatos__subtitle">
+        Revisa y verifica las solicitudes de candidatos registrados
+      </p>
+    </div>
+  </header>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="dashboard-candidatos__filters">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Buscar por nombre o número..."
+        [(ngModel)]="busqueda"
+        class="search-box__input"
+      />
+    </div>
+
+    <div class="filter-buttons">
+      <button
+        *ngFor="let estado of estadosDisponibles"
+        (click)="cambiarFiltro(estado)"
+        [class.active]="filtroEstado === estado"
+        class="filter-buttons__btn"
+      >
+        {{ estado | titlecase }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <main class="dashboard-candidatos__content">
+    <!-- Estado: Cargando -->
+    <ng-container *ngIf="loading; else noLoading">
+      <div class="loading-state">
+        <p>Cargando candidatos...</p>
+      </div>
+    </ng-container>
+
+    <ng-template #noLoading>
+      <!-- Estado: Error -->
+      <ng-container *ngIf="error; else noError">
+        <div class="error-state">
+          <p>{{ errorMessage }}</p>
+          <button class="btn btn--primary" (click)="reintentar()">Reintentar</button>
+        </div>
+      </ng-container>
+
+      <ng-template #noError>
+        <!-- Estado: Sin resultados -->
+        <ng-container *ngIf="candidatosFiltrados.length === 0; else tieneCandidatos">
+          <div class="empty-state">
+            <p>No hay candidatos disponibles</p>
+          </div>
+        </ng-container>
+
+        <!-- Estado: Mostrando candidatos -->
+        <ng-template #tieneCandidatos>
+          <div class="candidatos-grid">
+            <app-tarjeta-candidato
+              *ngFor="let candidato of candidatosFiltrados"
+              [candidato]="candidato"
+              [estado]="obtenerEstado(candidato)"
+              (verDetalles)="verDetalles($event)"
+            ></app-tarjeta-candidato>
+          </div>
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  </main>
+</section>

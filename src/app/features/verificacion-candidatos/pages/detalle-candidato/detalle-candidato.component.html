@@ -1,0 +1,80 @@
+<section class="detalle-candidato">
+  <!-- Botón volver -->
+  <div class="detalle-candidato__back">
+    <button class="btn-volver" (click)="volverAtras()">← Volver</button>
+  </div>
+
+  <!-- Contenido principal -->
+  <ng-container *ngIf="loading; else noLoading">
+    <div class="loading-state">
+      <p>Cargando candidato...</p>
+    </div>
+  </ng-container>
+
+  <ng-template #noLoading>
+    <ng-container *ngIf="error; else noError">
+      <div class="error-state">
+        <p>{{ errorMessage }}</p>
+        <button class="btn btn--primary" (click)="cargarCandidato()">Reintentar</button>
+      </div>
+    </ng-container>
+
+    <ng-template #noError>
+      <ng-container *ngIf="candidato; else noCandidato">
+        <!-- Header con información básica -->
+        <div class="detalle-candidato__header">
+          <div class="header-info">
+            <div class="header-info__estado-badge" [style.background-color]="getColorEstado()">
+              {{ obtenerEstado() }}
+            </div>
+            <h1 class="header-info__nombre">{{ candidato.nombre }}</h1>
+            <p class="header-info__numero">
+              <strong>Número:</strong> {{ candidato.numero }}
+            </p>
+            <p class="header-info__partido">
+              <strong>Partido:</strong> ID {{ candidato.idPartido }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Visor de documentos -->
+        <div class="detalle-candidato__documentos">
+          <app-visor-documentos-candidato [idCandidato]="candidato.idCandidato"></app-visor-documentos-candidato>
+        </div>
+
+        <!-- Acciones -->
+        <div class="detalle-candidato__acciones">
+          <button
+            class="btn btn--success"
+            (click)="aprobarSolicitud()"
+            [disabled]="procesandoAprobacion || procesandoRechazo || candidato.activo"
+          >
+            {{ procesandoAprobacion ? 'Aprobando...' : 'Aprobar Solicitud' }}
+          </button>
+
+          <button
+            class="btn btn--danger"
+            (click)="rechazarSolicitud()"
+            [disabled]="procesandoAprobacion || procesandoRechazo || !candidato.activo"
+          >
+            {{ procesandoRechazo ? 'Rechazando...' : 'Rechazar Solicitud' }}
+          </button>
+        </div>
+
+        <!-- Toast -->
+        <app-toast
+          *ngIf="showToast"
+          [message]="toastMessage"
+          [type]="toastType"
+          (close)="onCloseToast()"
+        ></app-toast>
+      </ng-container>
+
+      <ng-template #noCandidato>
+        <div class="empty-state">
+          <p>No se encontró el candidato</p>
+        </div>
+      </ng-template>
+    </ng-template>
+  </ng-template>
+</section>

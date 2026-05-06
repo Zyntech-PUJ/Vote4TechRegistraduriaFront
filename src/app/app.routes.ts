@@ -58,6 +58,24 @@ export const routes: Routes = [
   },
 
   /**
+   * VERIFICACIÓN DE CANDIDATOS
+   */
+  {
+    path: 'verificacion-candidatos',
+    loadChildren: () => import('./features/verificacion-candidatos/verificacion-candidatos.module').then(m => m.VerificacionCandidatosModule),
+    canActivate: [AuthGuard],
+  },
+
+  /**
+   * VERIFICACIÓN DE PARTIDOS
+   */
+  {
+    path: 'verificacion-partidos',
+    loadChildren: () => import('./features/verificacion-partidos/verificacion-partidos.module').then(m => m.VerificacionPartidosModule),
+    canActivate: [AuthGuard],
+  },
+
+  /**
    * cambio de centro
    */
   {
