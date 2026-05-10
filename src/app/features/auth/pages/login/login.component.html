@@ -1,39 +1,19 @@
 <div class="login">
   <div class="login__container">
-
     <div class="login__card">
       <h1>Ingreso al sistema</h1>
-      <p class="subtitle">
-        Acceda al sistema para gestionar el proceso electoral
-      </p>
+      <p class="subtitle">Acceda al sistema para gestionar el proceso electoral</p>
 
       <form (ngSubmit)="onLogin()" #form="ngForm">
-
-        <!-- SELECTOR DE TIPO DE USUARIO -->
+        <!-- USUARIO -->
         <div class="form-group">
-          <label>Tipo de Usuario</label>
-          <select
-            [(ngModel)]="tipoUsuario"
-            name="tipoUsuario"
-            required
-            class="form-select">
-            <option value="registrador">Registrador</option>
-            <option value="consejo">Consejo Nacional Electoral</option>
-            <option value="admin">Administrador Electoral</option>
-          </select>
-        </div>
-
-        <!-- USUARIO / USERNAME -->
-        <div class="form-group">
-          <label>
-            {{ tipoUsuario === 'consejo' ? 'Username' : 'Usuario' }}
-          </label>
+          <label>Usuario</label>
           <input
             type="text"
             [(ngModel)]="usuario"
             name="usuario"
             required
-            [placeholder]="tipoUsuario === 'consejo' ? 'Ingrese su username' : 'Ingrese su usuario'"
+            placeholder="Ingrese su usuario"
           />
         </div>
 
@@ -49,20 +29,14 @@
           />
         </div>
 
-        <button class="btn btn--primary glow" [disabled]="loading">
+        <button class="btn btn--primary glow" type="submit" [disabled]="loading">
           {{ loading ? 'Ingresando...' : 'Ingresar' }}
         </button>
-
       </form>
     </div>
-
   </div>
 
   <!-- TOAST -->
-  <app-toast
-    *ngIf="showToast"
-    [message]="toastMessage"
-    [type]="toastType"
-    (close)="onCloseToast()">
+  <app-toast *ngIf="showToast" [message]="toastMessage" [type]="toastType" (close)="onCloseToast()">
   </app-toast>
 </div>

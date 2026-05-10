@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CandidatoService } from '../../service/candidato.service';
 
 @Component({
   selector: 'app-candidato-form',
@@ -9,11 +10,16 @@ import { CommonModule } from '@angular/common';
   templateUrl: './candidato-form.component.html',
   styleUrls: ['./candidato-form.component.scss'],
 })
-export class CandidatoFormComponent {
+export class CandidatoFormComponent implements OnInit {
   @Output() formSubmit = new EventEmitter<any>();
 
   candidatoForm: FormGroup;
   archivos: any = {};
+
+  // Partidos cargados desde la BD
+  partidos: any[] = [];
+  loadingPartidos = false;
+  errorPartidos = '';
 
   fileTypes = [
     { key: 'foto', label: 'Fotografía' },
@@ -23,22 +29,29 @@ export class CandidatoFormComponent {
     { key: 'aval', label: 'Aval' },
   ];
 
-  organizaciones = ['Partido Liberal', 'Partido Conservador', 'Partido Verde', 'Cambio Radical'];
-
+  // Tipos de elección — lista fija igual que en crear-eleccion
   elecciones = [
-    'Presidenciales',
-    'Legislativas',
-    'Locales y Regionales',
-    'Consultas',
-    'Especiales',
+    { value: 'CONGRESO', label: 'Elecciones de Congreso' },
+    { value: 'PRESIDENCIAL', label: 'Elecciones de Presidencia' },
+    { value: 'GOBERNADORES', label: 'Elecciones de Gobernadores' },
+    { value: 'ALCALDES', label: 'Elecciones de Alcaldes' },
+    { value: 'CONCEJOS', label: 'Elecciones de Concejos Municipales' },
+    { value: 'ASAMBLEA', label: 'Elecciones de Asambleas Departamentales' },
+    { value: 'JUNTAS', label: 'Elecciones de Juntas Administradoras Locales' },
+    { value: 'JUVENIL', label: 'Consejos de Juventud' },
+    { value: 'INDIGENA', label: 'Elecciones de Resguardos Indígenas' },
   ];
 
   cargosMap: any = {
-    Presidenciales: ['Presidente'],
-    Legislativas: ['Senador', 'Representante'],
-    'Locales y Regionales': ['Gobernador', 'Alcalde', 'Consejero Local'],
-    Consultas: ['Precandidato', 'Directivo Partido'],
-    Especiales: ['Consejero Juventud', 'Autoridad Indígena'],
+    CONGRESO: ['Senador', 'Representante a la Cámara'],
+    PRESIDENCIAL: ['Presidente', 'Vicepresidente'],
+    GOBERNADORES: ['Gobernador'],
+    ALCALDES: ['Alcalde'],
+    CONCEJOS: ['Concejal'],
+    ASAMBLEA: ['Diputado'],
+    JUNTAS: ['Edil'],
+    JUVENIL: ['Representante Juvenil'],
+    INDIGENA: ['Autoridad Indígena'],
   };
 
   cargosDisponibles: string[] = [];
@@ -46,12 +59,40 @@ export class CandidatoFormComponent {
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
+    private candidatoService: CandidatoService,
   ) {
     this.candidatoForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      organizacion: ['', Validators.required],
+      idPartido: ['', Validators.required],
       eleccion: ['', Validators.required],
       cargo: ['', Validators.required],
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarPartidos();
+  }
+
+  cargarPartidos(): void {
+    this.loadingPartidos = true;
+    this.errorPartidos = '';
+    this.cdr.detectChanges();
+
+    this.candidatoService.getPartidosAprobados().subscribe({
+      next: (data) => {
+        queueMicrotask(() => {
+          this.partidos = data;
+          this.loadingPartidos = false;
+          this.cdr.detectChanges();
+        });
+      },
+      error: () => {
+        queueMicrotask(() => {
+          this.errorPartidos = 'No se pudieron cargar los partidos. Intente nuevamente.';
+          this.loadingPartidos = false;
+          this.cdr.detectChanges();
+        });
+      },
     });
   }
 
@@ -99,22 +140,19 @@ export class CandidatoFormComponent {
 
     const formData = new FormData();
 
-    // ✅ El back espera el JSON con Content-Type application/json
-    // Se envía como Blob igual que en el script .sh con ;type=application/json
     const data = {
       nombre: this.candidatoForm.value.nombre,
-      numero: '1', // campo requerido por el DTO — ajustar según flujo
+      numero: '1',
       activo: true,
-      idLista: 1, // ajustar cuando haya selector de lista
-      idPartido: 1, // ajustar cuando haya selector de partido
-      idRegistrador: 1, // ajustar cuando haya sesión real
+      idLista: 1,
+      idPartido: Number(this.candidatoForm.value.idPartido),
+      idRegistrador: 1,
     };
 
     formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
 
-    // ✅ Claves exactas que espera el back según el OpenAPI y el script .sh
     formData.append('foto', this.archivos['foto'].file);
-    formData.append('formularioE6', this.archivos['e6'].file); // clave corregida
+    formData.append('formularioE6', this.archivos['e6'].file);
     formData.append('certificado', this.archivos['cert'].file);
     formData.append('cedula', this.archivos['cedula'].file);
     formData.append('aval', this.archivos['aval'].file);

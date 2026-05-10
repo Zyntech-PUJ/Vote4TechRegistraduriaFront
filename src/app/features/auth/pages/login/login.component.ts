@@ -15,11 +15,8 @@ import { ToastComponent } from '../../../../shared/components/toast/toast.compon
 export class LoginComponent {
   usuario = '';
   password = '';
-  tipoUsuario: 'registrador' | 'consejo' | 'admin' = 'registrador';
-
   loading = false;
 
-  // Toast
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
   showToast = false;
@@ -33,50 +30,43 @@ export class LoginComponent {
   onLogin() {
     if (!this.usuario || !this.password) {
       this.showError('Debe ingresar usuario y contraseña');
+      this.cdr.detectChanges();
       return;
     }
 
     this.loading = true;
+    this.cdr.detectChanges();
 
-    let loginObservable;
-
-    if (this.tipoUsuario === 'registrador') {
-      loginObservable = this.authService.loginRegistrador(this.usuario, this.password);
-    } else if (this.tipoUsuario === 'consejo') {
-      loginObservable = this.authService.loginConsejoNacional(this.usuario, this.password);
-    } else if (this.tipoUsuario === 'admin') {
-      loginObservable = this.authService.loginAdministrador(this.usuario, this.password);
-    }
-
-    loginObservable!.subscribe({
+    this.authService.login(this.usuario, this.password).subscribe({
       next: () => {
-        this.showSuccess(`Inicio de sesión exitoso como ${this.tipoUsuario}`);
+        queueMicrotask(() => {
+          this.loading = false;
+          this.showSuccess('Inicio de sesión exitoso');
+          this.cdr.detectChanges();
 
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 1000);
-
-        this.loading = false;
-        this.cdr.detectChanges();
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 1000);
+        });
       },
       error: (err: any) => {
-        console.error('Error en login:', err);
-        
-        let errorMessage = 'Error desconocido';
-        
-        if (err.status === 401) {
-          errorMessage = 'Credenciales incorrectas';
-        } else if (err.status === 400) {
-          errorMessage = 'Datos inválidos. Verifique usuario y contraseña';
-        } else if (err.status === 500) {
-          errorMessage = 'Error del servidor. Intente más tarde';
-        } else if (err.status === 0) {
-          errorMessage = 'No se puede conectar al servidor';
-        }
-        
-        this.showError(errorMessage);
-        this.loading = false;
-        this.cdr.detectChanges();
+        queueMicrotask(() => {
+          this.loading = false;
+
+          if (err.status === 401) {
+            this.showError('Usuario o contraseña incorrectos');
+          } else if (err.status === 400) {
+            this.showError('Datos inválidos. Verifique usuario y contraseña');
+          } else if (err.status === 500) {
+            this.showError('Error del servidor. Intente más tarde');
+          } else if (err.status === 0) {
+            this.showError('No se puede conectar al servidor');
+          } else {
+            this.showError('Error desconocido. Intente nuevamente');
+          }
+
+          this.cdr.detectChanges();
+        });
       },
     });
   }

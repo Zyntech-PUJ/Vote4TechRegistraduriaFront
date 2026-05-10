@@ -12,16 +12,23 @@
     <label>NOMBRE CANDIDATO</label>
     <input type="text" formControlName="nombre" />
 
-    <label>ORGANIZACIÓN POLÍTICA</label>
-    <select formControlName="organizacion">
-      <option value="">Seleccione</option>
-      <option *ngFor="let org of organizaciones">{{ org }}</option>
+    <label>PARTIDO POLÍTICO</label>
+    <div *ngIf="loadingPartidos" class="loading-text">Cargando partidos...</div>
+    <div *ngIf="errorPartidos" class="error-text">
+      {{ errorPartidos }}
+      <button type="button" (click)="cargarPartidos()">Reintentar</button>
+    </div>
+    <select formControlName="idPartido" *ngIf="!loadingPartidos && !errorPartidos">
+      <option value="">Seleccione un partido</option>
+      <option *ngFor="let p of partidos" [value]="p.idPartido">
+        {{ p.nombre }} ({{ p.sigla }})
+      </option>
     </select>
 
     <label>ELECCIÓN</label>
     <select formControlName="eleccion" (change)="onEleccionChange()">
       <option value="">Seleccione</option>
-      <option *ngFor="let e of elecciones">{{ e }}</option>
+      <option *ngFor="let e of elecciones" [value]="e.value">{{ e.label }}</option>
     </select>
 
     <label>CARGO</label>
