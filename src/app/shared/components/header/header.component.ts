@@ -79,4 +79,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         return 'Usuario';
     }
   }
+
+  /**
+   * Navegación desde el header
+   */
+  navigateTo(route: string) {
+    this.router.navigate([route]);
+  }
 }

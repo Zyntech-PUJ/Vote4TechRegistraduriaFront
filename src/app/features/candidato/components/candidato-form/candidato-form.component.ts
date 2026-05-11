@@ -138,26 +138,21 @@ export class CandidatoFormComponent implements OnInit {
       return;
     }
 
-    const formData = new FormData();
-
+    // Datos básicos (sin archivos en FormData)
     const data = {
       nombre: this.candidatoForm.value.nombre,
       numero: '1',
-      activo: true,
+      activo: false, // ESTADO PENDIENTE DESDE EL INICIO
       idLista: 1,
       idPartido: Number(this.candidatoForm.value.idPartido),
       idRegistrador: 1,
     };
 
-    formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-
-    formData.append('foto', this.archivos['foto'].file);
-    formData.append('formularioE6', this.archivos['e6'].file);
-    formData.append('certificado', this.archivos['cert'].file);
-    formData.append('cedula', this.archivos['cedula'].file);
-    formData.append('aval', this.archivos['aval'].file);
-
-    this.formSubmit.emit(formData);
+    // Emitir datos + archivos por separado
+    this.formSubmit.emit({
+      data,
+      archivos: this.archivos,
+    });
   }
 
   resetForm() {

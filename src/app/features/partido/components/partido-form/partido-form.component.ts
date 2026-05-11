@@ -65,25 +65,19 @@ export class PartidoFormComponent {
       return;
     }
 
-    const formData = new FormData();
-
-    // ✅ JSON como Blob con Content-Type application/json
+    // Datos básicos (sin archivos en FormData)
     const data = {
       nombre: this.partidoForm.value.nombre,
       sigla: this.partidoForm.value.sigla,
-      idRegistrador: 1, // ajustar cuando haya sesión real
+      activo: false, // ESTADO PENDIENTE DESDE EL INICIO
+      idRegistrador: 1,
     };
 
-    formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-
-    // ✅ Claves exactas del OpenAPI y el script .sh
-    formData.append('logo', this.archivos['logo'].file);
-    formData.append('estatutos', this.archivos['estatutos'].file);
-    formData.append('plataforma', this.archivos['plataforma'].file);
-    formData.append('registro', this.archivos['registro'].file);
-    formData.append('certificado', this.archivos['certificado'].file);
-
-    this.formSubmit.emit(formData);
+    // Emitir datos + archivos por separado
+    this.formSubmit.emit({
+      data,
+      archivos: this.archivos,
+    });
   }
 
   resetForm() {

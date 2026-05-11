@@ -1,6 +1,7 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { CitizenCardComponent } from '../../components/citizen-card/citizen-card.component';
 import { HistoryCardComponent } from '../../components/history-card/history-card.component';
@@ -47,7 +48,10 @@ export class CambioCentroPageComponent {
     },
   };
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+  ) {}
 
   buscarCiudadano() {
     this.clearMessages();
@@ -132,5 +136,12 @@ export class CambioCentroPageComponent {
     this.errorMessage = '';
     this.errorCedula = '';
     this.errorCentro = '';
+  }
+
+  /**
+   * Botón volver a inicio
+   */
+  goHome() {
+    this.router.navigate(['/']);
   }
 }

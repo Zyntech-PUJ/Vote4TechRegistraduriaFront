@@ -8,7 +8,7 @@ import {
   Validators,
   AbstractControl,
 } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { EleccionService, CreateEleccionDTO } from '../../services/eleccion.service';
 
 @Component({
@@ -69,6 +69,7 @@ export class CrearEleccionComponent {
     private fb: FormBuilder,
     private eleccionService: EleccionService,
     public cdr: ChangeDetectorRef,
+    private router: Router, // AÑADIR
   ) {
     this.eleccionForm = this.fb.group(
       {
@@ -361,5 +362,12 @@ export class CrearEleccionComponent {
         });
       },
     });
+  }
+
+  /**
+   * Botón volver a inicio
+   */
+  goHome() {
+    this.router.navigate(['/']);
   }
 }

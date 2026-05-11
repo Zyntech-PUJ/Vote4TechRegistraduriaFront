@@ -37,13 +37,91 @@
       </div>
     </a>
 
-    <!-- NAV -->
+    <!-- ✅ NAV CON BOTONES FUNCIONALES POR CATEGORÍA -->
     <nav class="nav" *ngIf="isAuthenticated">
-      <a class="nav__link">Evento Electoral</a>
-      <a class="nav__link">Llaves y credenciales</a>
-      <a class="nav__link">Multas</a>
-      <a class="nav__link">Infraestructura</a>
-      <a class="nav__link">Despliegue logístico</a>
+      <!-- GESTIÓN ELECTORAL -->
+      <div class="nav__group">
+        <span class="nav__group-title">Gestión Electoral</span>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/eleccion/crear')"
+          title="Crear nueva elección"
+        >
+          🗳️ Crear Elección
+        </button>
+      </div>
+
+      <!-- REGISTRO -->
+      <div class="nav__group">
+        <span class="nav__group-title">Registro</span>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/candidato/crear')"
+          title="Registrar nuevo candidato"
+        >
+          ➕ Candidatos
+        </button>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/partidos/crear')"
+          title="Registrar nuevo partido"
+        >
+          🏛️ Partidos
+        </button>
+      </div>
+
+      <!-- VERIFICACIÓN -->
+      <div class="nav__group">
+        <span class="nav__group-title">Verificación</span>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/verificacion-candidatos')"
+          title="Aprobar/rechazar candidatos"
+        >
+          ✓ Candidatos
+        </button>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/verificacion-partidos')"
+          title="Aprobar/rechazar partidos"
+        >
+          ✓ Partidos
+        </button>
+      </div>
+
+      <!-- LOGÍSTICA -->
+      <div class="nav__group">
+        <span class="nav__group-title">Logística</span>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/cambio-centro')"
+          title="Cambio de centro de votación"
+        >
+          📍 Cambio Centro
+        </button>
+      </div>
+
+      <!-- JURADOS -->
+      <div class="nav__group">
+        <span class="nav__group-title">Jurados</span>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/jurado/sorteo')"
+          title="Realizar sorteo de jurados"
+        >
+          🎲 Sorteo
+        </button>
+        <button class="nav__link" (click)="navigateTo('/jurado/listar')" title="Gestionar jurados">
+          👥 Gestión
+        </button>
+        <button
+          class="nav__link"
+          (click)="navigateTo('/jurado/capacitacion')"
+          title="Capacitación de jurados"
+        >
+          🎓 Capacitación
+        </button>
+      </div>
 
       <div class="nav__divider"></div>
 

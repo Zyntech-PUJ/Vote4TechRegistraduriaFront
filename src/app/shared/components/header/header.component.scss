@@ -27,7 +27,7 @@
   background: linear-gradient(90deg, #081f3a, #0b2a4a);
   color: var(--text-light);
   font-size: 0.72rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   &__inner {
     display: flex;
@@ -66,7 +66,7 @@
   backdrop-filter: blur(12px);
 
   border-bottom: 1px solid var(--border-soft);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 
   &__inner {
     display: flex;
@@ -85,6 +85,7 @@
   gap: 0.7rem;
   text-decoration: none;
   color: white;
+  flex-shrink: 0;
 
   transition: transform 0.25s ease;
 
@@ -101,7 +102,7 @@
     align-items: center;
     justify-content: center;
 
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
 
     svg {
       width: 20px;
@@ -133,29 +134,57 @@
   }
 }
 
-/* ═════════ NAV PRO ═════════ */
+/* ═════════ NAV PRO CON GRUPOS ═════════ */
 .nav {
   display: flex;
   align-items: center;
-  gap: 1.6rem;
+  gap: 0.4rem;
+  flex: 1;
+  margin: 0 1.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  &__group-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 0.4rem;
+    color: var(--gold);
+  }
 
   &__link {
-    font-size: 0.88rem;
-    opacity: 0.8;
+    font-size: 0.75rem;
+    opacity: 0.85;
     cursor: pointer;
     position: relative;
     transition: all 0.25s ease;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    text-align: left;
 
     &:hover {
       color: var(--gold);
       opacity: 1;
+      background: rgba(250, 204, 21, 0.12);
     }
 
     /* underline animado PRO */
     &::after {
       content: '';
       position: absolute;
-      bottom: -6px;
+      bottom: -4px;
       left: 0;
       width: 0%;
       height: 2px;
@@ -170,24 +199,26 @@
 
   &__divider {
     width: 1px;
-    height: 18px;
-    background: rgba(255,255,255,0.2);
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 0.5rem;
   }
 
   &__search-btn {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     padding: 0.35rem 0.65rem;
     cursor: pointer;
     color: white;
+    font-size: 0.85rem;
 
     transition: all 0.25s ease;
 
     &:hover {
       border-color: var(--gold);
       color: var(--gold);
-      background: rgba(250,204,21,0.1);
+      background: rgba(250, 204, 21, 0.1);
     }
   }
 }
@@ -197,6 +228,7 @@
   display: flex;
   align-items: center;
   gap: 0.7rem;
+  flex-shrink: 0;
 }
 
 /* ROL */
@@ -204,7 +236,7 @@
   font-size: 0.72rem;
   padding: 0.2rem 0.5rem;
   border-radius: 6px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-light);
 }
 
@@ -287,11 +319,26 @@
   background: #22c55e;
   border-radius: 50%;
 
-  box-shadow: 0 0 6px rgba(34,197,94,0.6);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
 }
 
 /* ═════════ RESPONSIVE ═════════ */
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
+  .nav {
+    gap: 0.2rem;
+  }
+
+  .nav__link {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .nav__group-title {
+    display: none;
+  }
+}
+
+@media (max-width: 1000px) {
   .nav {
     display: none;
   }

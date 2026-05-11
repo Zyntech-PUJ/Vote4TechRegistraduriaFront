@@ -1,6 +1,26 @@
 <!-- ══ PAGE HERO ══ -->
 <section class="page-hero">
   <div class="page-hero__inner">
+    <!-- Botón VOLVER a inicio -->
+    <button
+      class="breadcrumb__back-btn"
+      (click)="goHome()"
+      type="button"
+      title="Volver a inicio"
+      style="margin-bottom: 12px"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Volver a inicio
+    </button>
+
     <nav class="breadcrumb">
       <a routerLink="/" class="breadcrumb__item">
         <svg
@@ -41,6 +61,7 @@
       </svg>
       <span class="breadcrumb__item breadcrumb__item--active">Creación de Elecciones</span>
     </nav>
+    <!-- FIN BREADCRUMB -->
 
     <div class="page-hero__body">
       <div class="page-hero__titles">
