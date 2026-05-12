@@ -9,38 +9,48 @@
         <h4 class="documento-card__label">{{ documento.label }}</h4>
       </div>
 
-      <!-- Área de visualización o carga -->
+      <!-- Área de visualización -->
       <div class="documento-card__preview">
-        <!-- Si está cargado, mostrar PDF -->
-        <ng-container *ngIf="estaCargado(documento.tipo); else noCargado">
-          <div class="documento-card__preview-content">
-            <embed
-              [src]="documentoUrlSanitizada[documento.tipo]"
-              type="application/pdf"
-              class="documento-card__pdf"
-            />
-          </div>
+        <!-- Ya cargado → mostrar PDF -->
+        <ng-container *ngIf="estaCargado(documento.tipo); else noMostrado">
+          <embed
+            [src]="documentoUrlSanitizada[documento.tipo]"
+            type="application/pdf"
+            class="documento-card__pdf"
+          />
         </ng-container>
 
-        <!-- Si no está cargado o hay error -->
-        <ng-template #noCargado>
+        <!-- No cargado aún -->
+        <ng-template #noMostrado>
           <div class="documento-card__placeholder">
-            <ng-container *ngIf="hayError(documento.tipo); else noIntentado">
-              <p class="documento-card__error">Error al cargar</p>
+            <!-- Cargando -->
+            <ng-container *ngIf="esCargando(documento.tipo)">
+              <p class="documento-card__sin-cargar">Cargando documento...</p>
             </ng-container>
 
-            <ng-template #noIntentado>
-              <p class="documento-card__sin-cargar">Cargando...</p>
-            </ng-template>
+            <!-- Error -->
+            <ng-container *ngIf="hayError(documento.tipo) && !esCargando(documento.tipo)">
+              <p class="documento-card__error">{{ getMensajeError(documento.tipo) }}</p>
+              <button class="btn btn--ghost" (click)="verDocumento(documento)">Reintentar</button>
+            </ng-container>
+
+            <!-- Sin cargar todavía → botón Ver -->
+            <ng-container *ngIf="!esCargando(documento.tipo) && !hayError(documento.tipo)">
+              <p class="documento-card__sin-cargar">Haga click para ver el documento</p>
+              <button class="btn btn--primary" (click)="verDocumento(documento)">
+                Ver documento
+              </button>
+            </ng-container>
           </div>
         </ng-template>
       </div>
 
-      <!-- Botón descargar -->
+      <!-- Botón descargar — siempre visible -->
       <div class="documento-card__acciones">
         <button
           class="btn btn--ghost"
           (click)="descargarDocumento(documento)"
+          [disabled]="esCargando(documento.tipo)"
         >
           Descargar
         </button>

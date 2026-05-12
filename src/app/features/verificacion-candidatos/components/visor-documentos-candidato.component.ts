@@ -1,10 +1,9 @@
-import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VerificacionCandidatoService } from '../services/verificacion-candidato.service';
 
 interface Documento {
-  nombre: string;
   tipo: 'foto' | 'formulario-e6' | 'certificado' | 'cedula' | 'aval';
   label: string;
   icono: string;
@@ -18,50 +17,32 @@ interface Documento {
   templateUrl: './visor-documentos-candidato.component.html',
   styleUrls: ['./visor-documentos-candidato.component.scss'],
 })
-export class VisorDocumentosCandidatoComponent implements OnInit {
+export class VisorDocumentosCandidatoComponent {
   @Input() idCandidato!: number;
 
   documentos: Documento[] = [
+    { tipo: 'foto', label: 'Fotografía', icono: '📷', nombreDescarga: 'foto.pdf' },
     {
-      nombre: 'foto',
-      tipo: 'foto',
-      label: 'Fotografía',
-      icono: '📷',
-      nombreDescarga: 'foto.pdf',
-    },
-    {
-      nombre: 'formularioE6',
       tipo: 'formulario-e6',
       label: 'Formulario E-6',
       icono: '📋',
       nombreDescarga: 'formulario-e6.pdf',
     },
     {
-      nombre: 'certificado',
       tipo: 'certificado',
       label: 'Certificado Consejo de Estado',
       icono: '📄',
       nombreDescarga: 'certificado.pdf',
     },
-    {
-      nombre: 'cedula',
-      tipo: 'cedula',
-      label: 'Fotocopia Cédula',
-      icono: '🆔',
-      nombreDescarga: 'cedula.pdf',
-    },
-    {
-      nombre: 'aval',
-      tipo: 'aval',
-      label: 'Documento Aval',
-      icono: '✅',
-      nombreDescarga: 'aval.pdf',
-    },
+    { tipo: 'cedula', label: 'Fotocopia Cédula', icono: '🆔', nombreDescarga: 'cedula.pdf' },
+    { tipo: 'aval', label: 'Documento Aval', icono: '✅', nombreDescarga: 'aval.pdf' },
   ];
 
+  // Estado por documento
+  cargando: { [key: string]: boolean } = {};
   documentoUrl: { [key: string]: string } = {};
   documentoUrlSanitizada: { [key: string]: SafeResourceUrl } = {};
-  documentoError: { [key: string]: boolean } = {};
+  documentoError: { [key: string]: string } = {};
 
   constructor(
     private verificacionService: VerificacionCandidatoService,
@@ -69,30 +50,15 @@ export class VisorDocumentosCandidatoComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void {
-    // Cargar todos los documentos automáticamente al inicializar
-    this.cargarTodosLosDocumentos();
-  }
+  // ✅ Solo carga cuando el usuario hace click — no en ngOnInit
+  verDocumento(documento: Documento): void {
+    if (this.documentoUrl[documento.tipo] || this.cargando[documento.tipo]) return;
 
-  /**
-   * Cargar todos los documentos automáticamente
-   */
-  private cargarTodosLosDocumentos(): void {
-    this.documentos.forEach((documento) => {
-      this.cargarDocumento(documento);
-    });
-  }
-
-  /**
-   * Cargar documento y obtener URL para visualización
-   */
-  cargarDocumento(documento: Documento): void {
-    if (this.documentoUrl[documento.tipo]) {
-      return; // Ya está cargado
-    }
+    this.cargando[documento.tipo] = true;
+    this.documentoError[documento.tipo] = '';
+    this.cdr.detectChanges();
 
     let request$;
-
     switch (documento.tipo) {
       case 'foto':
         request$ = this.verificacionService.obtenerFoto(this.idCandidato);
@@ -116,30 +82,26 @@ export class VisorDocumentosCandidatoComponent implements OnInit {
     request$.subscribe({
       next: (blob: Blob) => {
         queueMicrotask(() => {
-          const url = this.verificacionService.obtenerURLBlob(blob);
+          const url = URL.createObjectURL(blob);
           this.documentoUrl[documento.tipo] = url;
-          // Sanitizar para embeds PDF
-          this.documentoUrlSanitizada[documento.tipo] = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-          this.documentoError[documento.tipo] = false;
+          this.documentoUrlSanitizada[documento.tipo] =
+            this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          this.cargando[documento.tipo] = false;
           this.cdr.detectChanges();
         });
       },
-      error: (err) => {
-        console.error(`Error al cargar ${documento.label}:`, err);
+      error: () => {
         queueMicrotask(() => {
-          this.documentoError[documento.tipo] = true;
+          this.cargando[documento.tipo] = false;
+          this.documentoError[documento.tipo] = 'No se pudo cargar el documento';
           this.cdr.detectChanges();
         });
       },
     });
   }
 
-  /**
-   * Descargar documento
-   */
   descargarDocumento(documento: Documento): void {
     let request$;
-
     switch (documento.tipo) {
       case 'foto':
         request$ = this.verificacionService.obtenerFoto(this.idCandidato);
@@ -159,28 +121,23 @@ export class VisorDocumentosCandidatoComponent implements OnInit {
       default:
         return;
     }
-
     request$.subscribe({
-      next: (blob: Blob) => {
-        this.verificacionService.descargarArchivo(blob, documento.nombreDescarga);
-      },
-      error: (err) => {
-        console.error(`Error al descargar ${documento.label}:`, err);
-      },
+      next: (blob: Blob) =>
+        this.verificacionService.descargarArchivo(blob, documento.nombreDescarga),
+      error: (err) => console.error(`Error al descargar ${documento.label}:`, err),
     });
   }
 
-  /**
-   * Verificar si el documento está cargado
-   */
   estaCargado(tipo: string): boolean {
     return !!this.documentoUrl[tipo];
   }
-
-  /**
-   * Verificar si hay error
-   */
+  esCargando(tipo: string): boolean {
+    return !!this.cargando[tipo];
+  }
   hayError(tipo: string): boolean {
-    return this.documentoError[tipo] || false;
+    return !!this.documentoError[tipo];
+  }
+  getMensajeError(tipo: string): string {
+    return this.documentoError[tipo] || '';
   }
 }

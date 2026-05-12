@@ -18,48 +18,88 @@ export class CrearCandidatoComponent {
   toastType: 'success' | 'error' = 'success';
   showToast = false;
   isLoading = false;
+  progresoArchivos = '';
 
   constructor(
     private candidatoService: CandidatoService,
     private cdr: ChangeDetectorRef,
   ) {}
 
-  /**
-   * NUEVO: Recibe datos + archivos por separado
-   */
   onCrearCandidato(payload: { datos: any; archivos: { [key: string]: File } }) {
     this.isLoading = true;
+    this.progresoArchivos = 'Creando candidato...';
     this.cdr.detectChanges();
 
-    // Llamar al servicio con el flujo correcto
-    this.candidatoService.crearCandidatoConDocumentos(payload.datos, payload.archivos).subscribe({
-      next: (response) => {
+    // Paso 1: POST con JSON puro
+    this.candidatoService.crearCandidato(payload.datos).subscribe({
+      next: (candidatoCreado) => {
         queueMicrotask(() => {
-          this.isLoading = false;
-          this.toastMessage = 'Candidato registrado exitosamente con todos sus documentos';
-          this.toastType = 'success';
-          this.showToast = true;
-
-          // Limpiar formulario después de 2 segundos
-          setTimeout(() => {
-            this.candidatoFormComponent.resetForm();
-          }, 2000);
-
-          this.cdr.detectChanges();
+          const idCandidato = candidatoCreado.idCandidato;
+          this.subirArchivosSecuencial(idCandidato, payload.archivos);
         });
       },
       error: (err) => {
         queueMicrotask(() => {
           this.isLoading = false;
-          this.toastMessage =
-            err?.error?.message || 'Error al registrar el candidato o subir documentos';
+          this.progresoArchivos = '';
+          this.toastMessage = err?.error?.message || 'Error al crear el candidato';
           this.toastType = 'error';
           this.showToast = true;
-
           this.cdr.detectChanges();
         });
       },
     });
+  }
+
+  private subirArchivosSecuencial(idCandidato: number, archivos: any): void {
+    // Mapeo clave del form → campo del back
+    const campos: { campo: string; archivo: File }[] = [
+      { campo: 'foto', archivo: archivos['foto'] },
+      { campo: 'formularioE6', archivo: archivos['e6'] },
+      { campo: 'certificado', archivo: archivos['cert'] },
+      { campo: 'cedula', archivo: archivos['cedula'] },
+      { campo: 'aval', archivo: archivos['aval'] },
+    ];
+
+    let indice = 0;
+
+    const subirSiguiente = () => {
+      if (indice >= campos.length) {
+        this.isLoading = false;
+        this.progresoArchivos = '';
+        this.toastMessage = 'Candidato registrado. Queda pendiente de aprobación.';
+        this.toastType = 'success';
+        this.showToast = true;
+        this.candidatoFormComponent.resetForm();
+        this.cdr.detectChanges();
+        return;
+      }
+
+      const { campo, archivo } = campos[indice];
+      this.progresoArchivos = `Subiendo ${campo} (${indice + 1}/${campos.length})...`;
+      this.cdr.detectChanges();
+
+      this.candidatoService.subirArchivo(idCandidato, campo, archivo).subscribe({
+        next: () => {
+          queueMicrotask(() => {
+            indice++;
+            subirSiguiente();
+          });
+        },
+        error: () => {
+          queueMicrotask(() => {
+            this.isLoading = false;
+            this.progresoArchivos = '';
+            this.toastMessage = `Candidato creado pero falló la subida de "${campo}".`;
+            this.toastType = 'error';
+            this.showToast = true;
+            this.cdr.detectChanges();
+          });
+        },
+      });
+    };
+
+    subirSiguiente();
   }
 
   onCloseToast() {
