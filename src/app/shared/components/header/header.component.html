@@ -37,7 +37,7 @@
       </div>
     </a>
 
-    <!-- ✅ NAV CON MENÚS DESPLEGABLES POR HOVER -->
+    <!-- NAV CON MENÚS DESPLEGABLES POR HOVER -->
     <nav class="nav" *ngIf="isAuthenticated">
       <!-- GESTIÓN ELECTORAL -->
       <div class="nav__dropdown">
@@ -110,10 +110,12 @@
     <!-- ACTIONS -->
     <div class="header__actions">
       <ng-container *ngIf="isAuthenticated; else loginBlock">
-        <!-- ✅ USUARIO + ROLL INVERSO -->
+        <!-- USUARIO INFO (INVERSO) CON ROL -->
         <div class="user-info">
-          <span class="user-name">{{ userName }}</span>
-          <span class="user-role">{{ getTypeLabel() }}</span>
+          <div class="user-header">
+            <span class="user-name">{{ userName }}</span>
+            <span class="user-role">{{ getTypeLabel() }}</span>
+          </div>
         </div>
 
         <!-- LOGOUT -->

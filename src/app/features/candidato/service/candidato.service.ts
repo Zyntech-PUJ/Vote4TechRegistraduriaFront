@@ -37,12 +37,15 @@ export class CandidatoService {
     datosCandidato: any,
     archivos: { [key: string]: File },
   ): Observable<any> {
-    // PASO 1: Crear el candidato (POST con JSON)
-    return this.http.post<CandidatoResponse>(`${this.apiUrl}/add`, datosCandidato).pipe(
+    // PASO 1: Convertir datos a FormData (NO JSON)
+    const formDataPost = new FormData();
+    formDataPost.append('data', JSON.stringify(datosCandidato));
+
+    return this.http.post<CandidatoResponse>(`${this.apiUrl}/add`, formDataPost).pipe(
       // PASO 2: Una vez creado, obtener el ID y subir archivos
       switchMap((response: CandidatoResponse) => {
         const idCandidato = response.idCandidato;
-        console.log(' Candidato creado con ID:', idCandidato);
+        console.log('Candidato creado con ID:', idCandidato);
 
         // Mapear archivos a observables de PATCH
         const patchRequests$: Observable<any>[] = [];
