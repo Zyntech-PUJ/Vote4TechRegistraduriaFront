@@ -70,6 +70,7 @@ export class PartidoFormComponent {
       nombre: this.partidoForm.value.nombre,
       sigla: this.partidoForm.value.sigla,
       idRegistrador: 1, // Ajustar cuando haya sesión real
+      activo: false,
     };
 
     // PASO 2: Mapear archivos correctamente

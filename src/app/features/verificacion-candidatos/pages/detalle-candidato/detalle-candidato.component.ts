@@ -1,8 +1,15 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VerificacionCandidatoService, ResponseCandidatoDTO } from '../../services/verificacion-candidato.service';
+
+import {
+  VerificacionCandidatoService,
+  ResponseCandidatoDTO,
+} from '../../services/verificacion-candidato.service';
+
 import { VisorDocumentosCandidatoComponent } from '../../components/visor-documentos-candidato.component';
+
 import { ToastComponent } from '../../../../shared/components/toast/toast.component';
 
 @Component({
@@ -14,17 +21,24 @@ import { ToastComponent } from '../../../../shared/components/toast/toast.compon
 })
 export class DetalleCandidatoComponent implements OnInit {
   candidato: ResponseCandidatoDTO | null = null;
+
   loading = true;
   error = false;
   errorMessage = '';
+
   idCandidato: number = 0;
+
+  /**
+   * Control de carga del visor PDF
+   */
+  mostrarDocumentos = false;
 
   // Toast
   showToast = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
 
-  // Estados para los botones
+  // Estados botones
   procesandoAprobacion = false;
   procesandoRechazo = false;
 
@@ -37,33 +51,56 @@ export class DetalleCandidatoComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      this.idCandidato = params['id'];
+      this.idCandidato = Number(params['id']);
       this.cargarCandidato();
     });
   }
 
   /**
-   * Cargar datos del candidato
+   * Cargar candidato
    */
   cargarCandidato(): void {
     this.loading = true;
     this.error = false;
+
+    /**
+     * Evita montar PDFs antes de tiempo
+     */
+    this.mostrarDocumentos = false;
+
     this.cdr.detectChanges();
 
     this.verificacionService.obtenerCandidatoPorId(this.idCandidato).subscribe({
       next: (data) => {
         queueMicrotask(() => {
           this.candidato = data;
+
           this.loading = false;
+
+          /**
+           * Monta el visor después
+           * del render principal
+           */
+          setTimeout(() => {
+            this.mostrarDocumentos = true;
+            this.cdr.detectChanges();
+          }, 0);
+
           this.cdr.detectChanges();
         });
       },
+
       error: (err) => {
         console.error('Error al cargar candidato:', err);
+
         queueMicrotask(() => {
           this.error = true;
+
           this.errorMessage = 'Error al cargar el candidato. Intenta de nuevo.';
+
           this.loading = false;
+          this.mostrarDocumentos = false;
+
           this.cdr.detectChanges();
         });
       },
@@ -71,26 +108,34 @@ export class DetalleCandidatoComponent implements OnInit {
   }
 
   /**
-   * Obtener estado del candidato
+   * Estado
    */
   obtenerEstado(): string {
-    if (!this.candidato) return 'Desconocido';
+    if (!this.candidato) {
+      return 'DESCONOCIDO';
+    }
+
     return this.candidato.activo ? 'APROBADO' : 'PENDIENTE';
   }
 
   /**
-   * Obtener color del estado
+   * Color estado
    */
   getColorEstado(): string {
-    if (!this.candidato) return '#facc15';
+    if (!this.candidato) {
+      return '#facc15';
+    }
+
     return this.candidato.activo ? '#10b981' : '#facc15';
   }
 
   /**
-   * Aprobar solicitud del candidato (pone activo en true)
+   * Aprobar candidato
    */
   aprobarSolicitud(): void {
-    if (!this.candidato) return;
+    if (!this.candidato) {
+      return;
+    }
 
     this.procesandoAprobacion = true;
     this.cdr.detectChanges();
@@ -99,20 +144,29 @@ export class DetalleCandidatoComponent implements OnInit {
       next: (datosActualizados) => {
         queueMicrotask(() => {
           this.candidato = datosActualizados;
+
           this.toastMessage = 'Candidato aprobado correctamente';
+
           this.toastType = 'success';
           this.showToast = true;
+
           this.procesandoAprobacion = false;
+
           this.cdr.detectChanges();
         });
       },
+
       error: (err) => {
         console.error('Error al aprobar candidato:', err);
+
         queueMicrotask(() => {
           this.toastMessage = 'Error al aprobar el candidato';
+
           this.toastType = 'error';
           this.showToast = true;
+
           this.procesandoAprobacion = false;
+
           this.cdr.detectChanges();
         });
       },
@@ -120,10 +174,12 @@ export class DetalleCandidatoComponent implements OnInit {
   }
 
   /**
-   * Rechazar solicitud del candidato (pone activo en false)
+   * Rechazar candidato
    */
   rechazarSolicitud(): void {
-    if (!this.candidato) return;
+    if (!this.candidato) {
+      return;
+    }
 
     this.procesandoRechazo = true;
     this.cdr.detectChanges();
@@ -132,20 +188,29 @@ export class DetalleCandidatoComponent implements OnInit {
       next: (datosActualizados) => {
         queueMicrotask(() => {
           this.candidato = datosActualizados;
+
           this.toastMessage = 'Candidato rechazado';
+
           this.toastType = 'success';
           this.showToast = true;
+
           this.procesandoRechazo = false;
+
           this.cdr.detectChanges();
         });
       },
+
       error: (err) => {
         console.error('Error al rechazar candidato:', err);
+
         queueMicrotask(() => {
           this.toastMessage = 'Error al rechazar el candidato';
+
           this.toastType = 'error';
           this.showToast = true;
+
           this.procesandoRechazo = false;
+
           this.cdr.detectChanges();
         });
       },
@@ -153,7 +218,7 @@ export class DetalleCandidatoComponent implements OnInit {
   }
 
   /**
-   * Volver al dashboard
+   * Volver
    */
   volverAtras(): void {
     this.router.navigate(['/verificacion-candidatos']);

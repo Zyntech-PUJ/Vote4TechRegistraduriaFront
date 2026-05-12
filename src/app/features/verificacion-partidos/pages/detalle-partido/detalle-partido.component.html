@@ -4,7 +4,7 @@
     <button class="btn-volver" (click)="volverAtras()">← Volver</button>
   </div>
 
-  <!-- Contenido principal -->
+  <!-- Loading -->
   <ng-container *ngIf="loading; else noLoading">
     <div class="loading-state">
       <p>Cargando partido...</p>
@@ -12,34 +12,50 @@
   </ng-container>
 
   <ng-template #noLoading>
+    <!-- Error -->
     <ng-container *ngIf="error; else noError">
       <div class="error-state">
         <p>{{ errorMessage }}</p>
+
         <button class="btn btn--primary" (click)="cargarPartido()">Reintentar</button>
       </div>
     </ng-container>
 
     <ng-template #noError>
       <ng-container *ngIf="partido; else noPartido">
-        <!-- Header con información básica -->
+        <!-- Header -->
         <div class="detalle-partido__header">
           <div class="header-info">
             <div class="header-info__estado-badge" [style.background-color]="getColorEstado()">
               {{ obtenerEstado() }}
             </div>
-            <h1 class="header-info__nombre">{{ partido.nombre }}</h1>
+
+            <h1 class="header-info__nombre">
+              {{ partido.nombre }}
+            </h1>
+
             <p class="header-info__sigla">
-              <strong>Sigla:</strong> {{ partido.sigla }}
+              <strong>Sigla:</strong>
+              {{ partido.sigla }}
             </p>
+
             <p class="header-info__registrador">
-              <strong>Registrador:</strong> ID {{ partido.idRegistrador }}
+              <strong>Registrador:</strong>
+              ID {{ partido.idRegistrador }}
             </p>
           </div>
         </div>
 
-        <!-- Visor de documentos -->
+        <!-- DOCUMENTOS -->
         <div class="detalle-partido__documentos">
-          <app-visor-documentos-partido [idPartido]="partido.idPartido"></app-visor-documentos-partido>
+          <!-- Loader independiente -->
+          <div class="loading-state" *ngIf="!mostrarDocumentos">
+            <p>Cargando documentos...</p>
+          </div>
+
+          <!-- Visor -->
+          <app-visor-documentos-partido *ngIf="mostrarDocumentos" [idPartido]="partido.idPartido">
+          </app-visor-documentos-partido>
         </div>
 
         <!-- Acciones -->
@@ -67,7 +83,8 @@
           [message]="toastMessage"
           [type]="toastType"
           (close)="onCloseToast()"
-        ></app-toast>
+        >
+        </app-toast>
       </ng-container>
 
       <ng-template #noPartido>

@@ -142,7 +142,7 @@ export class CandidatoFormComponent implements OnInit {
     const datosCandidato = {
       nombre: this.candidatoForm.value.nombre,
       numero: '1',
-      activo: true,
+      activo: false, // Estado PENDIENTE
       idLista: 1,
       idPartido: Number(this.candidatoForm.value.idPartido),
       idRegistrador: 1,

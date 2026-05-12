@@ -22,6 +22,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   userName: string | null = null;
   userType: string | null = null;
+  userRole: string = 'Usuario'; // Agregar esto
   private subscription: Subscription | null = null;
   private authChangeHandler: (() => void) | null = null;
 
@@ -36,6 +37,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.isAuthenticated = !!user;
       this.userName = user?.usuario || user?.username || null;
       this.userType = user?.tipo || null;
+      this.userRole = this.getTypeLabel(); // Actualizar role aquí
+      console.log('👤 Usuario actualizado:', {
+        userName: this.userName,
+        userType: this.userType,
+        userRole: this.userRole,
+      }); // DEBUG
       this.cdr.markForCheck();
     });
 
@@ -57,6 +64,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isAuthenticated = !!user;
     this.userName = user?.usuario || user?.username || null;
     this.userType = user?.tipo || null;
+    this.userRole = this.getTypeLabel(); // Actualizar role aquí también
+    console.log('👤 Estado de auth actualizado:', {
+      userName: this.userName,
+      userType: this.userType,
+      userRole: this.userRole,
+    }); // DEBUG
     this.cdr.markForCheck();
   }
 
@@ -67,17 +80,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Mapear todos los tipos de usuario posibles
+   */
   getTypeLabel(): string {
-    switch (this.userType) {
-      case 'registrador':
-        return 'Registrador';
-      case 'consejo':
-        return 'Consejo Nacional';
-      case 'admin':
-        return 'Administrador Electoral';
-      default:
-        return 'Usuario';
-    }
+    if (!this.userType) return 'Usuario';
+
+    const typeMap: { [key: string]: string } = {
+      registrador: 'Registrador',
+      REGISTRADOR: 'Registrador',
+      consejo: 'Consejo Nacional',
+      CONSEJO: 'Consejo Nacional',
+      admin: 'Administrador Electoral',
+      ADMIN: 'Administrador Electoral',
+      administrador: 'Administrador Electoral',
+      ADMINISTRADOR: 'Administrador Electoral',
+    };
+
+    return typeMap[this.userType] || this.userType;
   }
 
   /**
