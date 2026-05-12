@@ -37,90 +37,68 @@
       </div>
     </a>
 
-    <!-- ✅ NAV CON BOTONES FUNCIONALES POR CATEGORÍA -->
+    <!-- ✅ NAV CON MENÚS DESPLEGABLES POR HOVER -->
     <nav class="nav" *ngIf="isAuthenticated">
       <!-- GESTIÓN ELECTORAL -->
-      <div class="nav__group">
-        <span class="nav__group-title">Gestión Electoral</span>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/eleccion/crear')"
-          title="Crear nueva elección"
-        >
-          🗳️ Crear Elección
-        </button>
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-title">🗳️ Gestión Electoral</button>
+        <div class="nav__dropdown-menu">
+          <button class="nav__dropdown-item" (click)="navigateTo('/eleccion/crear')">
+            Crear Elección
+          </button>
+        </div>
       </div>
 
       <!-- REGISTRO -->
-      <div class="nav__group">
-        <span class="nav__group-title">Registro</span>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/candidato/crear')"
-          title="Registrar nuevo candidato"
-        >
-          ➕ Candidatos
-        </button>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/partidos/crear')"
-          title="Registrar nuevo partido"
-        >
-          🏛️ Partidos
-        </button>
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-title">➕ Registro</button>
+        <div class="nav__dropdown-menu">
+          <button class="nav__dropdown-item" (click)="navigateTo('/candidato/crear')">
+            Registrar Candidatos
+          </button>
+          <button class="nav__dropdown-item" (click)="navigateTo('/partidos/crear')">
+            Registrar Partidos
+          </button>
+        </div>
       </div>
 
       <!-- VERIFICACIÓN -->
-      <div class="nav__group">
-        <span class="nav__group-title">Verificación</span>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/verificacion-candidatos')"
-          title="Aprobar/rechazar candidatos"
-        >
-          ✓ Candidatos
-        </button>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/verificacion-partidos')"
-          title="Aprobar/rechazar partidos"
-        >
-          ✓ Partidos
-        </button>
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-title">✓ Verificación</button>
+        <div class="nav__dropdown-menu">
+          <button class="nav__dropdown-item" (click)="navigateTo('/verificacion-candidatos')">
+            Candidatos
+          </button>
+          <button class="nav__dropdown-item" (click)="navigateTo('/verificacion-partidos')">
+            Partidos
+          </button>
+        </div>
       </div>
 
       <!-- LOGÍSTICA -->
-      <div class="nav__group">
-        <span class="nav__group-title">Logística</span>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/cambio-centro')"
-          title="Cambio de centro de votación"
-        >
-          📍 Cambio Centro
-        </button>
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-title">📍 Logística</button>
+        <div class="nav__dropdown-menu">
+          <button class="nav__dropdown-item" (click)="navigateTo('/cambio-centro')">
+            Cambio de Centro
+          </button>
+        </div>
       </div>
 
       <!-- JURADOS -->
-      <div class="nav__group">
-        <span class="nav__group-title">Jurados</span>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/jurado/sorteo')"
-          title="Realizar sorteo de jurados"
-        >
-          🎲 Sorteo
-        </button>
-        <button class="nav__link" (click)="navigateTo('/jurado/listar')" title="Gestionar jurados">
-          👥 Gestión
-        </button>
-        <button
-          class="nav__link"
-          (click)="navigateTo('/jurado/capacitacion')"
-          title="Capacitación de jurados"
-        >
-          🎓 Capacitación
-        </button>
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-title">👥 Jurados</button>
+        <div class="nav__dropdown-menu">
+          <button class="nav__dropdown-item" (click)="navigateTo('/jurado/sorteo')">
+            Sorteo de Jurados
+          </button>
+          <button class="nav__dropdown-item" (click)="navigateTo('/jurado/listar')">
+            Gestión de Jurados
+          </button>
+          <button class="nav__dropdown-item" (click)="navigateTo('/jurado/capacitacion')">
+            Capacitación
+          </button>
+        </div>
       </div>
 
       <div class="nav__divider"></div>
@@ -132,11 +110,11 @@
     <!-- ACTIONS -->
     <div class="header__actions">
       <ng-container *ngIf="isAuthenticated; else loginBlock">
-        <!-- ROL -->
-        <span class="user-role">{{ getTypeLabel() }}</span>
-
-        <!-- USUARIO -->
-        <span class="user-name">{{ userName }}</span>
+        <!-- ✅ USUARIO + ROLL INVERSO -->
+        <div class="user-info">
+          <span class="user-name">{{ userName }}</span>
+          <span class="user-role">{{ getTypeLabel() }}</span>
+        </div>
 
         <!-- LOGOUT -->
         <button class="btn-access" (click)="onLogout()">Cerrar sesión</button>

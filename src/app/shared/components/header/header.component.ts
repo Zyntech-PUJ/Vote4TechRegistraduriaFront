@@ -81,7 +81,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Navegación desde el header
+   * Navegación desde los dropdowns
    */
   navigateTo(route: string) {
     this.router.navigate([route]);

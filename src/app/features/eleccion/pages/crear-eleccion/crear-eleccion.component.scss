@@ -1,3 +1,66 @@
+/* ════════════════════════════════════
+   BOTÓN VOLVER ESTILIZADO
+════════════════════════════════════ */
+
+.breadcrumb__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  background: linear-gradient(135deg, #facc15, #eab308);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.35);
+  margin-bottom: 1rem;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(250, 204, 21, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
 // ─── TOKENS ───────────────────────────────────────────────────────────────────
 :host {
   display: block;

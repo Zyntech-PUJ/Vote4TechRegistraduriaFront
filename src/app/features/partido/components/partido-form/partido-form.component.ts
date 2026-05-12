@@ -65,18 +65,26 @@ export class PartidoFormComponent {
       return;
     }
 
-    // Datos básicos (sin archivos en FormData)
-    const data = {
+    // PASO 1: Enviar solo JSON (sin archivos)
+    const datosPartido = {
       nombre: this.partidoForm.value.nombre,
       sigla: this.partidoForm.value.sigla,
-      activo: false, // ESTADO PENDIENTE DESDE EL INICIO
-      idRegistrador: 1,
+      idRegistrador: 1, // Ajustar cuando haya sesión real
     };
 
-    // Emitir datos + archivos por separado
+    // PASO 2: Mapear archivos correctamente
+    const archivosFormato: { [key: string]: File } = {
+      logo: this.archivos['logo']?.file,
+      estatutos: this.archivos['estatutos']?.file,
+      plataforma: this.archivos['plataforma']?.file,
+      registro: this.archivos['registro']?.file,
+      certificado: this.archivos['certificado']?.file,
+    };
+
+    // Emitir ambos parámetros al componente padre
     this.formSubmit.emit({
-      data,
-      archivos: this.archivos,
+      datos: datosPartido,
+      archivos: archivosFormato,
     });
   }
 

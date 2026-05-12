@@ -1,30 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, forkJoin } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
+
+interface CandidatoResponse {
+  idCandidato: number;
+  [key: string]: any;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class CandidatoService {
   private apiUrl = '/api/candidato';
-  private partidoUrl = '/api/partido';
 
   constructor(private http: HttpClient) {}
 
-  getCandidatos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/candidatos`).pipe(
-      catchError((error) => {
-        console.error('Error getCandidatos:', error);
-        return throwError(() => error);
-      }),
-    );
-  }
-
-  // Obtiene partidos aprobados para el dropdown del formulario
+  /**
+   * Obtener partidos aprobados
+   */
   getPartidosAprobados(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.partidoUrl}/partidos`).pipe(
-      map((partidos) => partidos.filter((p) => p.estado === 'APROBADO' || p.activo === true)),
+    return this.http.get<any[]>('/api/partido/partidos').pipe(
       catchError((error) => {
         console.error('Error getPartidos:', error);
         return throwError(() => error);
@@ -33,29 +29,71 @@ export class CandidatoService {
   }
 
   /**
-   * NUEVO FLUJO:
-   * 1. POST candidato sin archivos → obtiene idCandidato
-   * 2. Retorna el objeto con el ID
+   * FLUJO CORRECTO:
+   * 1. POST crear candidato (solo JSON)
+   * 2. PATCH para cada documento (secuencial)
    */
-  crearCandidato(data: any): Observable<any> {
-    const formData = new FormData();
-    formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+  crearCandidatoConDocumentos(
+    datosCandidato: any,
+    archivos: { [key: string]: File },
+  ): Observable<any> {
+    // PASO 1: Crear el candidato (POST con JSON)
+    return this.http.post<CandidatoResponse>(`${this.apiUrl}/add`, datosCandidato).pipe(
+      // PASO 2: Una vez creado, obtener el ID y subir archivos
+      switchMap((response: CandidatoResponse) => {
+        const idCandidato = response.idCandidato;
+        console.log(' Candidato creado con ID:', idCandidato);
 
-    return this.http.post(`${this.apiUrl}/add`, formData).pipe(
+        // Mapear archivos a observables de PATCH
+        const patchRequests$: Observable<any>[] = [];
+
+        if (archivos['foto']) {
+          patchRequests$.push(this.subirArchivoCandidato(idCandidato, 'foto', archivos['foto']));
+        }
+        if (archivos['e6']) {
+          patchRequests$.push(
+            this.subirArchivoCandidato(idCandidato, 'formularioE6', archivos['e6']),
+          );
+        }
+        if (archivos['cert']) {
+          patchRequests$.push(
+            this.subirArchivoCandidato(idCandidato, 'certificado', archivos['cert']),
+          );
+        }
+        if (archivos['cedula']) {
+          patchRequests$.push(
+            this.subirArchivoCandidato(idCandidato, 'cedula', archivos['cedula']),
+          );
+        }
+        if (archivos['aval']) {
+          patchRequests$.push(this.subirArchivoCandidato(idCandidato, 'aval', archivos['aval']));
+        }
+
+        // Ejecutar todos los PATCH en secuencia (uno tras otro)
+        return patchRequests$.length > 0
+          ? forkJoin(patchRequests$)
+          : throwError(() => new Error('No hay archivos para subir'));
+      }),
       catchError((error) => {
-        console.error('Error crearCandidato:', error);
+        console.error('Error en crearCandidatoConDocumentos:', error);
         return throwError(() => error);
       }),
     );
   }
 
   /**
-   * PATCH archivo individual
-   * Sube un archivo específico para un candidato ya creado
+   * PATCH para subir cada documento individualmente
+   * Corresponde a: PATCH /candidato/{idCandidato}/{campo}
    */
-  subirArchivoCandidato(idCandidato: number, campo: string, archivo: File): Observable<any> {
+  private subirArchivoCandidato(
+    idCandidato: number,
+    campo: string,
+    archivo: File,
+  ): Observable<any> {
     const formData = new FormData();
     formData.append(campo, archivo);
+
+    console.log(`📤 Subiendo ${campo} para candidato ${idCandidato}...`);
 
     return this.http.patch(`${this.apiUrl}/${idCandidato}/${campo}`, formData).pipe(
       catchError((error) => {
@@ -66,20 +104,12 @@ export class CandidatoService {
   }
 
   /**
-   * Sube TODOS los archivos secuencialmente
-   * Espera a que se cree el candidato, luego sube cada archivo
+   * Obtener todos los candidatos
    */
-  subirTodosLosArchivos(idCandidato: number, archivos: { [key: string]: File }): Observable<any> {
-    const requests: Observable<any>[] = [];
-
-    Object.entries(archivos).forEach(([campo, archivo]) => {
-      requests.push(this.subirArchivoCandidato(idCandidato, campo, archivo));
-    });
-
-    // forkJoin espera a que todos terminen
-    return forkJoin(requests).pipe(
+  getCandidatos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/candidatos`).pipe(
       catchError((error) => {
-        console.error('Error en carga de archivos:', error);
+        console.error('Error getCandidatos:', error);
         return throwError(() => error);
       }),
     );

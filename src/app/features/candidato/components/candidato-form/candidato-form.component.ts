@@ -138,20 +138,29 @@ export class CandidatoFormComponent implements OnInit {
       return;
     }
 
-    // Datos básicos (sin archivos en FormData)
-    const data = {
+    // Enviar solo JSON (sin archivos)
+    const datosCandidato = {
       nombre: this.candidatoForm.value.nombre,
       numero: '1',
-      activo: false, // ESTADO PENDIENTE DESDE EL INICIO
+      activo: true,
       idLista: 1,
       idPartido: Number(this.candidatoForm.value.idPartido),
       idRegistrador: 1,
     };
 
-    // Emitir datos + archivos por separado
+    // Mapear archivos correctamente
+    const archivosFormato: { [key: string]: File } = {
+      foto: this.archivos['foto']?.file,
+      e6: this.archivos['e6']?.file,
+      cert: this.archivos['cert']?.file,
+      cedula: this.archivos['cedula']?.file,
+      aval: this.archivos['aval']?.file,
+    };
+
+    // Emitir ambos parámetros al componente padre
     this.formSubmit.emit({
-      data,
-      archivos: this.archivos,
+      datos: datosCandidato,
+      archivos: archivosFormato,
     });
   }
 

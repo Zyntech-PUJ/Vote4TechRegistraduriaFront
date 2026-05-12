@@ -17,7 +17,7 @@ export class CrearCandidatoComponent {
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
   showToast = false;
-  procesando = false;
+  isLoading = false;
 
   constructor(
     private candidatoService: CandidatoService,
@@ -25,65 +25,39 @@ export class CrearCandidatoComponent {
   ) {}
 
   /**
-   * NUEVO FLUJO:
-   * 1. Recibe { data, archivos }
-   * 2. POST candidato → obtiene idCandidato
-   * 3. PATCH cada archivo
+   * NUEVO: Recibe datos + archivos por separado
    */
-  onCrearCandidato(payload: { data: any; archivos: any }) {
-    this.procesando = true;
+  onCrearCandidato(payload: { datos: any; archivos: { [key: string]: File } }) {
+    this.isLoading = true;
     this.cdr.detectChanges();
 
-    // PASO 1: Crear candidato sin archivos
-    this.candidatoService.crearCandidato(payload.data).subscribe({
-      next: (respuesta) => {
-        const idCandidato = respuesta.idCandidato; // Obtenemos el ID
+    // Llamar al servicio con el flujo correcto
+    this.candidatoService.crearCandidatoConDocumentos(payload.datos, payload.archivos).subscribe({
+      next: (response) => {
+        queueMicrotask(() => {
+          this.isLoading = false;
+          this.toastMessage = 'Candidato registrado exitosamente con todos sus documentos';
+          this.toastType = 'success';
+          this.showToast = true;
 
-        console.log('Candidato creado con ID:', idCandidato);
+          // Limpiar formulario después de 2 segundos
+          setTimeout(() => {
+            this.candidatoFormComponent.resetForm();
+          }, 2000);
 
-        // PASO 2: Subir todos los archivos
-        this.subirArchivos(idCandidato, payload.archivos);
+          this.cdr.detectChanges();
+        });
       },
       error: (err) => {
-        console.error('Error al crear candidato:', err);
-        this.procesando = false;
-        this.toastMessage = 'Error al crear el candidato';
-        this.toastType = 'error';
-        this.showToast = true;
-        this.cdr.detectChanges();
-      },
-    });
-  }
+        queueMicrotask(() => {
+          this.isLoading = false;
+          this.toastMessage =
+            err?.error?.message || 'Error al registrar el candidato o subir documentos';
+          this.toastType = 'error';
+          this.showToast = true;
 
-  /**
-   * Subir todos los archivos secuencialmente
-   */
-  private subirArchivos(idCandidato: number, archivos: any) {
-    const archivosMap: { [key: string]: File } = {};
-
-    Object.entries(archivos).forEach(([key, value]: [string, any]) => {
-      if (value?.file) {
-        archivosMap[key] = value.file;
-      }
-    });
-
-    this.candidatoService.subirTodosLosArchivos(idCandidato, archivosMap).subscribe({
-      next: () => {
-        this.procesando = false;
-        this.toastMessage = 'Candidato registrado correctamente (pendiente de aprobación)';
-        this.toastType = 'success';
-        this.showToast = true;
-
-        this.candidatoFormComponent.resetForm();
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al subir archivos:', err);
-        this.procesando = false;
-        this.toastMessage = 'Candidato creado pero hubo error al subir documentos';
-        this.toastType = 'error';
-        this.showToast = true;
-        this.cdr.detectChanges();
+          this.cdr.detectChanges();
+        });
       },
     });
   }
