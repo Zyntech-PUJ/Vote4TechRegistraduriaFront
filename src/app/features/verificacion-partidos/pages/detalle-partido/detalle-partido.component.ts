@@ -1,12 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import {
   VerificacionPartidoService,
   ResponsePartidoDTO,
 } from '../../services/verificacion-partido.service';
-
 import { VisorDocumentosPartidoComponent } from '../../components/visor-documentos-partido.component';
 import { ToastComponent } from '../../../../shared/components/toast/toast.component';
 
@@ -19,27 +17,17 @@ import { ToastComponent } from '../../../../shared/components/toast/toast.compon
 })
 export class DetallePartidoComponent implements OnInit {
   partido: ResponsePartidoDTO | null = null;
-
   loading = true;
   error = false;
   errorMessage = '';
-
   idPartido: number = 0;
-
-  /**
-   * IMPORTANTE:
-   * Controla cuándo montar el visor PDF.
-   * Así evitamos que Angular/renderizado intente
-   * cargar todos los PDFs inmediatamente.
-   */
-  mostrarDocumentos = false;
 
   // Toast
   showToast = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
 
-  // Estados botones
+  // Estados para los botones
   procesandoAprobacion = false;
   procesandoRechazo = false;
 
@@ -52,7 +40,7 @@ export class DetallePartidoComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      this.idPartido = Number(params['id']);
+      this.idPartido = params['id'];
       this.cargarPartido();
     });
   }
@@ -63,47 +51,22 @@ export class DetallePartidoComponent implements OnInit {
   cargarPartido(): void {
     this.loading = true;
     this.error = false;
-
-    /**
-     * Reseteamos el visor para que no monte
-     * los PDFs mientras aún carga la data.
-     */
-    this.mostrarDocumentos = false;
-
     this.cdr.detectChanges();
 
     this.verificacionService.obtenerPartidoPorId(this.idPartido).subscribe({
       next: (data) => {
         queueMicrotask(() => {
           this.partido = data;
-
           this.loading = false;
-
-          /**
-           * Esperamos un ciclo del render para montar
-           * el visor después del detalle.
-           *
-           * Esto evita cargas masivas simultáneas.
-           */
-          setTimeout(() => {
-            this.mostrarDocumentos = true;
-            this.cdr.detectChanges();
-          }, 0);
-
           this.cdr.detectChanges();
         });
       },
-
       error: (err) => {
         console.error('Error al cargar partido:', err);
-
         queueMicrotask(() => {
           this.error = true;
           this.errorMessage = 'Error al cargar el partido. Intenta de nuevo.';
-
           this.loading = false;
-          this.mostrarDocumentos = false;
-
           this.cdr.detectChanges();
         });
       },
@@ -111,34 +74,26 @@ export class DetallePartidoComponent implements OnInit {
   }
 
   /**
-   * Obtener estado
+   * Obtener estado del partido
    */
   obtenerEstado(): string {
-    if (!this.partido) {
-      return 'DESCONOCIDO';
-    }
-
+    if (!this.partido) return 'Desconocido';
     return this.partido.activo ? 'APROBADO' : 'PENDIENTE';
   }
 
   /**
-   * Obtener color estado
+   * Obtener color del estado
    */
   getColorEstado(): string {
-    if (!this.partido) {
-      return '#facc15';
-    }
-
+    if (!this.partido) return '#facc15';
     return this.partido.activo ? '#10b981' : '#facc15';
   }
 
   /**
-   * Aprobar partido
+   * Aprobar solicitud del partido (pone activo en true)
    */
   aprobarSolicitud(): void {
-    if (!this.partido) {
-      return;
-    }
+    if (!this.partido) return;
 
     this.procesandoAprobacion = true;
     this.cdr.detectChanges();
@@ -147,29 +102,20 @@ export class DetallePartidoComponent implements OnInit {
       next: (datosActualizados) => {
         queueMicrotask(() => {
           this.partido = datosActualizados;
-
           this.toastMessage = 'Partido aprobado correctamente';
-
           this.toastType = 'success';
           this.showToast = true;
-
           this.procesandoAprobacion = false;
-
           this.cdr.detectChanges();
         });
       },
-
       error: (err) => {
         console.error('Error al aprobar partido:', err);
-
         queueMicrotask(() => {
           this.toastMessage = 'Error al aprobar el partido';
-
           this.toastType = 'error';
           this.showToast = true;
-
           this.procesandoAprobacion = false;
-
           this.cdr.detectChanges();
         });
       },
@@ -177,12 +123,10 @@ export class DetallePartidoComponent implements OnInit {
   }
 
   /**
-   * Rechazar partido
+   * Rechazar solicitud del partido (pone activo en false)
    */
   rechazarSolicitud(): void {
-    if (!this.partido) {
-      return;
-    }
+    if (!this.partido) return;
 
     this.procesandoRechazo = true;
     this.cdr.detectChanges();
@@ -191,28 +135,20 @@ export class DetallePartidoComponent implements OnInit {
       next: (datosActualizados) => {
         queueMicrotask(() => {
           this.partido = datosActualizados;
-
           this.toastMessage = 'Partido rechazado';
           this.toastType = 'success';
           this.showToast = true;
-
           this.procesandoRechazo = false;
-
           this.cdr.detectChanges();
         });
       },
-
       error: (err) => {
         console.error('Error al rechazar partido:', err);
-
         queueMicrotask(() => {
           this.toastMessage = 'Error al rechazar el partido';
-
           this.toastType = 'error';
           this.showToast = true;
-
           this.procesandoRechazo = false;
-
           this.cdr.detectChanges();
         });
       },
@@ -220,7 +156,7 @@ export class DetallePartidoComponent implements OnInit {
   }
 
   /**
-   * Volver
+   * Volver al dashboard
    */
   volverAtras(): void {
     this.router.navigate(['/verificacion-partidos']);
