@@ -111,7 +111,7 @@ export class VerificacionPartidoService {
       ...partido,
       activo: true,
     };
-    return this.http.put<ResponsePartidoDTO>(`${this.apiUrl}/${partido.idPartido}`, payload).pipe(
+    return this.http.patch<ResponsePartidoDTO>(`${this.apiUrl}/${partido.idPartido}`, payload).pipe(
       catchError((error) => {
         console.error('Error aprobarPartido:', error);
         return throwError(() => error);
@@ -127,7 +127,7 @@ export class VerificacionPartidoService {
       ...partido,
       activo: false,
     };
-    return this.http.put<ResponsePartidoDTO>(`${this.apiUrl}/${partido.idPartido}`, payload).pipe(
+    return this.http.patch<ResponsePartidoDTO>(`${this.apiUrl}/${partido.idPartido}`, payload).pipe(
       catchError((error) => {
         console.error('Error rechazarPartido:', error);
         return throwError(() => error);

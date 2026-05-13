@@ -47,10 +47,21 @@ export class CandidatoService {
   // PATCH por archivo individual — multipart va aquí
   subirArchivo(idCandidato: number, campo: string, archivo: File): Observable<any> {
     const formData = new FormData();
+    // El nombre del campo debe coincidir con el nombre del endpoint
     formData.append(campo, archivo);
+
+    console.log(`📤 Subiendo ${campo}:`, {
+      field: campo,
+      file: archivo.name,
+      type: archivo.type,
+      size: archivo.size,
+    });
+
     return this.http.patch(`${this.apiUrl}/${idCandidato}/${campo}`, formData).pipe(
       catchError((error) => {
         console.error(`Error subiendo ${campo}:`, error);
+        console.error('Status:', error.status);
+        console.error('Body:', error.error);
         return throwError(() => error);
       }),
     );
