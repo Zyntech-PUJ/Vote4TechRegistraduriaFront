@@ -55,7 +55,7 @@ export class CrearCandidatoComponent {
     // Mapeo clave del form → campo del back
     const campos: { campo: string; archivo: File }[] = [
       { campo: 'foto', archivo: archivos['foto'] },
-      { campo: 'formularioE6', archivo: archivos['e6'] },
+      { campo: 'formulario-e6', archivo: archivos['e6'] },
       { campo: 'certificado', archivo: archivos['cert'] },
       { campo: 'cedula', archivo: archivos['cedula'] },
       { campo: 'aval', archivo: archivos['aval'] },
