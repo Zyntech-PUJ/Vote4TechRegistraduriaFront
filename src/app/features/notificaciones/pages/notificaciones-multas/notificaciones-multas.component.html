@@ -1,0 +1,74 @@
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <span class="page-hero__kicker">MÓDULO ELECTORAL · NOTIFICACIONES</span>
+    <h1 class="page-hero__title">Notificaciones de <em>Multas</em></h1>
+    <p class="page-hero__desc">
+      Estado de notificaciones enviadas a ciudadanos con multas por no votar en la jornada electoral
+      activa.
+    </p>
+  </div>
+</section>
+
+<main class="main-content">
+  <div class="content-wrapper">
+    <!-- Loading -->
+    <div class="state-box" *ngIf="loading">
+      <p>Cargando ciudadanos multados...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="state-box state-box--error" *ngIf="error && !loading">
+      <p>
+        No se pudo cargar la información. Verifique que el servicio de notificaciones esté activo.
+      </p>
+      <button class="btn-retry" (click)="cargarMultados()">Reintentar</button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-card" *ngIf="!loading && !error">
+      <div class="table-card__header">
+        <h2>Ciudadanos multados</h2>
+        <span class="table-card__count">{{ ciudadanos.length }} registros</span>
+      </div>
+
+      <table class="tabla-multas">
+        <thead>
+          <tr>
+            <th>Cédula</th>
+            <th>Estado notificación</th>
+            <th>Enviado a correo</th>
+            <th>Fecha fin elección</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of ciudadanos">
+            <td>{{ c.cedula }}</td>
+            <td>
+              <span
+                class="badge"
+                [class.badge--green]="c.estadoNotificacion === 'ENTREGADO'"
+                [class.badge--yellow]="c.estadoNotificacion === 'PENDIENTE'"
+              >
+                {{ c.estadoNotificacion }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="badge"
+                [class.badge--green]="c.enviadoACorreo === 'ENTREGADO'"
+                [class.badge--yellow]="c.enviadoACorreo === 'PENDIENTE'"
+              >
+                {{ c.enviadoACorreo }}
+              </span>
+            </td>
+            <td>{{ c.fechaFinalizacionEleccionActiva | date: 'dd/MM/yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-card__empty" *ngIf="ciudadanos.length === 0">
+        <p>No hay ciudadanos multados registrados.</p>
+      </div>
+    </div>
+  </div>
+</main>

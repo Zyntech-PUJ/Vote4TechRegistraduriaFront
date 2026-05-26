@@ -62,7 +62,10 @@ export const routes: Routes = [
    */
   {
     path: 'verificacion-candidatos',
-    loadChildren: () => import('./features/verificacion-candidatos/verificacion-candidatos.module').then(m => m.VerificacionCandidatosModule),
+    loadChildren: () =>
+      import('./features/verificacion-candidatos/verificacion-candidatos.module').then(
+        (m) => m.VerificacionCandidatosModule,
+      ),
     canActivate: [AuthGuard],
   },
 
@@ -71,7 +74,10 @@ export const routes: Routes = [
    */
   {
     path: 'verificacion-partidos',
-    loadChildren: () => import('./features/verificacion-partidos/verificacion-partidos.module').then(m => m.VerificacionPartidosModule),
+    loadChildren: () =>
+      import('./features/verificacion-partidos/verificacion-partidos.module').then(
+        (m) => m.VerificacionPartidosModule,
+      ),
     canActivate: [AuthGuard],
   },
 
@@ -83,6 +89,12 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/cambio-centro/cambio-centro.module').then((m) => m.CambioCentroModule),
     canActivate: [AuthGuard], // ← PROTEGIDA
+  },
+
+  {
+    path: 'notificaciones',
+    loadChildren: () =>
+      import('./features/notificaciones/notificaciones.module').then((m) => m.NotificacionesModule),
   },
 
   /**
