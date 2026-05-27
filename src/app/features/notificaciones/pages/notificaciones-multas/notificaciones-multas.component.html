@@ -21,52 +21,64 @@
       <p>
         No se pudo cargar la información. Verifique que el servicio de notificaciones esté activo.
       </p>
-      <button class="btn-retry" (click)="cargarMultados()">Reintentar</button>
+      <button class="btn-retry" (click)="cargarMultas()">Reintentar</button>
     </div>
 
     <!-- Tabla -->
     <div class="table-card" *ngIf="!loading && !error">
       <div class="table-card__header">
         <h2>Ciudadanos multados</h2>
-        <span class="table-card__count">{{ ciudadanos.length }} registros</span>
+        <span class="table-card__count">{{ multas.length }} registros</span>
       </div>
 
-      <table class="tabla-multas">
-        <thead>
-          <tr>
-            <th>Cédula</th>
-            <th>Estado notificación</th>
-            <th>Enviado a correo</th>
-            <th>Fecha fin elección</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let c of ciudadanos">
-            <td>{{ c.cedula }}</td>
-            <td>
-              <span
-                class="badge"
-                [class.badge--green]="c.estadoNotificacion === 'ENTREGADO'"
-                [class.badge--yellow]="c.estadoNotificacion === 'PENDIENTE'"
-              >
-                {{ c.estadoNotificacion }}
-              </span>
-            </td>
-            <td>
-              <span
-                class="badge"
-                [class.badge--green]="c.enviadoACorreo === 'ENTREGADO'"
-                [class.badge--yellow]="c.enviadoACorreo === 'PENDIENTE'"
-              >
-                {{ c.enviadoACorreo }}
-              </span>
-            </td>
-            <td>{{ c.fechaFinalizacionEleccionActiva | date: 'dd/MM/yyyy' }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="tabla-multas">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre completo</th>
+              <th>Cédula</th>
+              <th>Correo</th>
+              <th>Elección</th>
+              <th>Fecha elección</th>
+              <th>Fecha fin elección</th>
+              <th>Estado notificación</th>
+              <th>Enviado a correo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of multas">
+              <td>{{ m.id }}</td>
+              <td>{{ m.nombreCompleto }}</td>
+              <td>{{ m.cedula }}</td>
+              <td>{{ m.email }}</td>
+              <td>{{ m.nombreEleccion }}</td>
+              <td>{{ formatFecha(m.fechaEleccion) }}</td>
+              <td>{{ formatFecha(m.fechaFinalizacionEleccionActiva) }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge--green]="m.estadoNotificacion === 'Entregado'"
+                  [class.badge--yellow]="m.estadoNotificacion === 'Pendiente'"
+                >
+                  {{ m.estadoNotificacion }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge--green]="m.enviadoACorreo === 'Entregado'"
+                  [class.badge--yellow]="m.enviadoACorreo === 'Pendiente'"
+                >
+                  {{ m.enviadoACorreo }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <div class="table-card__empty" *ngIf="ciudadanos.length === 0">
+      <div class="table-card__empty" *ngIf="multas.length === 0">
         <p>No hay ciudadanos multados registrados.</p>
       </div>
     </div>

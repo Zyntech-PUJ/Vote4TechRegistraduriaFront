@@ -10,7 +10,7 @@ import { NotificacionesService, CiudadanoMultado } from '../../services/notifica
   styleUrls: ['./notificaciones-multas.component.scss'],
 })
 export class NotificacionesMultasComponent implements OnInit {
-  ciudadanos: CiudadanoMultado[] = [];
+  multas: CiudadanoMultado[] = [];
   loading = true;
   error = false;
 
@@ -20,18 +20,18 @@ export class NotificacionesMultasComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cargarMultados();
+    this.cargarMultas();
   }
 
-  cargarMultados(): void {
+  cargarMultas(): void {
     this.loading = true;
     this.error = false;
     this.cdr.detectChanges();
 
-    this.notificacionesService.getCiudadanosMultados().subscribe({
+    this.notificacionesService.getMultas().subscribe({
       next: (data) => {
         queueMicrotask(() => {
-          this.ciudadanos = data;
+          this.multas = data;
           this.loading = false;
           this.cdr.detectChanges();
         });
@@ -43,6 +43,14 @@ export class NotificacionesMultasComponent implements OnInit {
           this.cdr.detectChanges();
         });
       },
+    });
+  }
+
+  formatFecha(fecha: string): string {
+    return new Date(fecha).toLocaleDateString('es-CO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
     });
   }
 }
